@@ -114,9 +114,11 @@
 
     <!-- Konfigurasi Skrip JavaScript & Koneksi Supabase -->
     <script>
-        // ISI DENGAN Kredensial SUPABASE MILIK ANDA
-        const SUPABASE_URL = 'YOUR_SUPABASE_URL';
-        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+        // URL Supabase milikmu sudah terpasang otomatis di sini
+        const SUPABASE_URL = 'https://zatgfcfivpyclemyknxv.supabase.co';
+        
+        // PENTING: Masukkan Publishable/Anon Key panjang dari Supabase di antara tanda petik di bawah ini:
+        const SUPABASE_ANON_KEY = 'sb_publishable_GWpranv3E5EzGh4UJB0NkQ_AEmD2kOH';
         
         const { createClient } = supabase;
         const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
