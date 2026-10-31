@@ -45,6 +45,10 @@ td.money{text-align:right}
 .cellinput:focus{outline:2px solid #146c50;background:#f1fff7}
 .book-tools{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
 .book-tools button{font-size:13px;padding:10px 12px}
+.add-row-bottom{width:100%;min-width:0;padding:5px 3px;background:#e2e6e4;color:#26332e;border:1px solid #9aa6a0;border-radius:4px;font-size:10px;line-height:1.15;white-space:normal}
+.add-row-bottom:disabled{opacity:.45}
+th.current-day-column{background:#c6e8d5!important;outline:2px solid #168052;outline-offset:-2px}
+td.current-day-column{background:#f0fff6}
 .date-col-btn{padding:4px 3px;font-size:11px;background:#e9f2ed;color:#174b38;border:1px solid #b8cbbf;white-space:nowrap}
 .saveRow{font-size:11px;padding:7px 8px;white-space:nowrap}
 .booktitle{text-align:center;margin:4px 0 12px}
@@ -96,7 +100,6 @@ td.money{text-align:right}
 </div>
 <div class="book-tools">
 <button onclick="addTodayColumn('buku1')">+ Tambah Kolom Hari Ini</button>
-<button onclick="addBlankRow('buku1')">+ Tambah Baris</button>
 </div>
 <div class="tablewrap" id="book1Table"></div>
 </section>
@@ -235,9 +238,16 @@ function setDraft(kind,n,field,value){
 function addTodayColumn(kind){
  if(!canEditDate(today())){alert("Kolom pembayaran hanya dapat ditambahkan pada hari ini di bulan berjalan.");return}
  const d=today();
+ if(!dateColumns[kind])dateColumns[kind]=[];
  if(!dateColumns[kind].includes(d))dateColumns[kind].push(d);
  dateColumns[kind].sort();
- renderLedger(kind==="buku1"?"book1Table":"book2Table",currentLoans[kind]||[],kind);
+ const target=kind==="buku1"?"book1Table":"book2Table";
+ renderLedger(target,currentLoans[kind]||[],kind);
+ // Bawa tampilan ke kolom hari ini agar langsung terlihat di layar HP.
+ requestAnimationFrame(()=>{
+  const wrap=$(target),col=$(kind+"-date-col-"+d);
+  if(wrap&&col)wrap.scrollLeft=Math.max(0,col.offsetLeft-wrap.offsetLeft-(wrap.clientWidth-col.clientWidth)/2);
+ });
 }
 function addBlankRow(kind){
  if(kind!=="buku1")return;
@@ -251,7 +261,7 @@ function renderLedger(target,rows,kind){
  '<th class="col-date">TGL</th><th class="col-na">NA</th><th class="col-np">NP</th>'+
  '<th class="col-name">NAMA NASABAH</th><th class="col-address">ALAMAT</th>'+
  '<th class="col-amount">BESAR PINJAMAN</th><th class="col-balance">SALDO AWAL</th>';
- dates.forEach(d=>{const parts=d.split('-');h+=`<th class="col-payment">${parts[2]}/${parts[1]}</th>`});
+ dates.forEach(d=>{const parts=d.split('-'),isToday=canEditDate(d);h+=`<th id="${kind}-date-col-${d}" data-date="${d}" class="col-payment ${isToday?'current-day-column':''}">${parts[2]}/${parts[1]}</th>`});
  h+='<th class="col-total">JUMLAH BAYAR</th><th class="col-total">SISA SALDO</th>';
  if(kind==="buku1")h+='<th class="col-action">AKSI</th>';
  h+='</tr></thead><tbody>';
@@ -264,7 +274,7 @@ function renderLedger(target,rows,kind){
   h+=`<tr><td class="col-date">${esc(l.tanggal_drop)}</td><td class="col-na">${esc(m.no_anggota)}</td><td class="col-np">${esc(l.no_pinjaman)}</td>`+
   `<td class="col-name name">${esc(m.nama)}</td><td class="col-address name">${esc(m.alamat)}</td>`+
   `<td class="col-amount">${money(l.besar_pinjaman)}</td><td class="col-balance">${money(r.saldo_awal)}</td>`;
-  dates.forEach(d=>{const editable=canEditDate(d);h+=`<td class="col-payment">${editable?`<button class="date-col-btn" onclick="addPayment('${r.id}','${kind}','${d}')">${paidByDate[d]?money(paidByDate[d]):'+'}</button>`:(paidByDate[d]?money(paidByDate[d]):'—')}</td>`});
+  dates.forEach(d=>{const editable=canEditDate(d);h+=`<td class="col-payment ${editable?'current-day-column':''}">${editable?`<button class="date-col-btn" onclick="addPayment('${r.id}','${kind}','${d}')">${paidByDate[d]?money(paidByDate[d]):'+'}</button>`:(paidByDate[d]?money(paidByDate[d]):'—')}</td>`});
   h+=`<td class="col-total">${money(total)}</td><td class="col-total">${money(Math.max(0,Number(r.saldo_awal||0)-total))}</td>`;
   if(kind==="buku1")h+='<td class="col-action">—</td>';
   h+='</tr>';
@@ -281,7 +291,12 @@ function renderLedger(target,rows,kind){
   h+='<td class="col-total">—</td><td class="col-total">—</td>'+
   `<td class="col-action"><button class="saveRow" onclick="saveInlineLoan('${kind}',${n})">SIMPAN</button></td></tr>`;
  }
- h+='<tr><th colspan="7">JUMLAH STORTING HARIAN</th>';
+ h+='<tr class="summary-row">';
+ if(kind==="buku1"){
+  h+=`<td><button class="add-row-bottom" onclick="addBlankRow('buku1')" ${canEditDate(today())?'':'disabled'}>+ Tambah Baris</button></td><th colspan="6">JUMLAH STORTING HARIAN</th>`;
+ }else{
+  h+='<th colspan="7">JUMLAH STORTING HARIAN</th>';
+ }
  dates.forEach(d=>h+=`<th class="col-payment">${daily[d]?money(daily[d]):''}</th>`);
  h+=`<th>${money(sumPay)}</th><th></th>`+(kind==="buku1"?'<th></th>':'')+'</tr></tbody></table>';
  $(target).innerHTML=h;
