@@ -12,34 +12,34 @@ main{max-width:1500px;margin:18px auto;padding:0 12px}
 .card{background:white;border-radius:10px;padding:15px;margin-bottom:14px;box-shadow:0 2px 8px #0001}
 input,select,button{font:inherit;padding:10px;border:1px solid #cbd5d1;border-radius:6px}
 input,select{max-width:100%}button{background:#146c50;color:white;border:0;cursor:pointer;font-weight:bold}
-button:disabled{opacity:.5}label{font-size:13px;font-weight:bold;display:block;margin:7px 0 4px}
+tombol:dinonaktifkan{opasitas:.5}label{ukuran font:13px;ketebalan font:tebal;tampilan:blok;margin:7px 0 4px}
 .hidden{display:none!important}.muted{color:#66736d;font-size:13px}.error{color:#b42318}.success{color:#087443}
 #login{max-width:430px;margin:50px auto}#login input{width:100%;margin-bottom:10px}
 .menu{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
-.menu button{padding:16px 8px;font-size:17px;background:#31594e}
-.menu button.active{background:#0d3e30;outline:3px solid #a8c9b8}
+Tombol menu {padding:16px 8px;font-size:17px;background:#31594e}
+.tombol menu.aktif{latar belakang:#0d3e30;garis luar:3px solid #a8c9b8}
 .tablewrap{overflow:auto;background:white;border:1px solid #718078;border-radius:3px;max-height:72vh;overscroll-behavior:contain}
-table{border-collapse:collapse;min-width:1900px;width:max-content;font-size:12px;background:#fff}
+tabel{border-collapse:collapse;min-width:1900px;width:max-content;font-size:12px;background:#fff}
 th,td{border:1px solid #89958f;padding:8px 7px;text-align:center;white-space:nowrap;height:42px}
 th{background:#e2e8e4;position:sticky;top:0;z-index:3;font-weight:700}
 td.name,th.name{text-align:left;min-width:145px}
 td.fixedcol{background:#fff;position:sticky;z-index:1}th.fixedcol{position:sticky;z-index:4;background:#e2e8e4}
 td.money{text-align:right}
-.booktitle{text-align:center;margin:4px 0 12px}
+.judulbuku{perataan teks:tengah;margin:4px 0 12px}
 .formrow{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:8px;align-items:end}
 .formrow input,.formrow select{width:100%}
-.small{font-size:12px;padding:7px}
+.kecil{ukuran font:12px;padding:7px}
 .cellbtn{padding:4px 6px;font-size:11px;background:#e9f2ed;color:#174b38;border:1px solid #b8cbbf}
 @media(max-width:600px){header h2{font-size:18px}.menu button{font-size:14px;padding:13px 4px}main{padding:0 7px}.card{padding:10px}}
 </style>
 </head>
 <body>
 <header><h2>BUKU ANGSURAN KMJ JAYA</h2></header>
-<main>
+<utama>
 <section id="login" class="card">
-<h3 style="text-align:center">LOGIN ADMIN</h3>
+<h3 style="text-align:center">MASUK ADMIN</h3>
 <label>Email</label><input id="email" type="email" placeholder="Email admin">
-<label>Password</label><input id="password" type="password" placeholder="Password">
+<label>Kata Sandi</label><input id="password" type="password" placeholder="Kata Sandi">
 <button style="width:100%" onclick="loginAdmin()">MASUK</button>
 <p id="loginMsg"></p>
 </section>
@@ -55,20 +55,20 @@ td.money{text-align:right}
 <button id="btn-storting" onclick="showBook('storting')">BUKU STORTING</button>
 </nav>
 
-<section id="buku1" class="book hidden">
+<section id="buku1" class="buku tersembunyi">
 <div class="card">
 <h3 class="booktitle">BUKU I</h3>
 <div class="muted">Tabel bergaris seperti buku manual. Geser ke kanan/kiri dan ke atas/bawah untuk melihat seluruh halaman.</div>
 <p><button class="small" onclick="document.getElementById('formPinjaman').classList.toggle('hidden')">+ Tambah pinjaman</button></p>
-<div id="formPinjaman" class="hidden">
+<div id="formPinjaman" class="tersembunyi">
 <div class="formrow">
-<div><label>No. Anggota</label><select id="loanMember"></select></div>
-<div><label>No. Pinjaman</label><input id="loanNo" placeholder="Nomor pinjaman"></div>
+<div><label>Jumlah Anggota</label><select id="loanMember"></select></div>
+<div><label>Tidak. Pinjaman</label><input id="loanNo" placeholder="Jumlah pinjaman"></div>
 <div><label>Tanggal drop</label><input id="loanDate" type="date"></div>
 <div><label>Besar pinjaman (Rp)</label><input id="loanAmount" type="number" min="1"></div>
 <div><label>Jasa (Rp)</label><input id="loanFee" type="number" min="0" value="0"></div>
 <div><label>Total kewajiban (Rp)</label><input id="loanTotal" type="number" min="1"></div>
-<div><button onclick="saveLoan()">Simpan pinjaman</button></div>
+<div><button onclick="saveLoan()">Pinjaman</button></div>
 </div>
 <p id="loanMsg"></p>
 </div>
@@ -76,7 +76,7 @@ td.money{text-align:right}
 <div class="tablewrap" id="book1Table"></div>
 </section>
 
-<section id="buku2" class="book hidden">
+<section id="buku2" class="buku tersembunyi">
 <div class="card"><h3 class="booktitle">BUKU II</h3>
 <div class="muted">Tabel bergaris seperti buku manual. Geser ke kanan/kiri dan ke atas/bawah untuk melihat seluruh halaman.</div></div>
 <div class="tablewrap" id="book2Table"></div>
@@ -97,16 +97,16 @@ td.money{text-align:right}
 <script>
 const SUPABASE_URL="https://zatgfcifvpyclemyknxv.supabase.co";
 const SUPABASE_KEY="sb_publishable_GWpranv3E5EzGh4UJB0NkQ_AEmD2kOH";
-const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 let activePeriod=null, members=[], currentLoans={buku1:[],buku2:[]};
 const $=id=>document.getElementById(id);
 const money=n=>"Rp"+Number(n||0).toLocaleString("id-ID");
 const esc=v=>{let s=document.createElement("span");s.textContent=v??"-";return s.innerHTML};
 const msg=(id,t,c="")=>{$(id).textContent=t;$(id).className=c};
 const today=()=>{let d=new Date(),z=d.getTimezoneOffset();return new Date(d.getTime()-z*60000).toISOString().slice(0,10)};
-function monthName(d){return ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"][d.getMonth()]}
-async function loginAdmin(){
- msg("loginMsg","Memeriksa akun...");
+function nama bulan(d){return ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"][d.getMonth()]}
+fungsi asinkron loginAdmin(){
+ msg("loginMsg","Pemeriksaan akun...");
  const {data,error}=await db.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});
  if(error){msg("loginMsg","Login gagal: "+error.message,"error");return}
  const {data:p,error:pe}=await db.from("profiles").select("role").eq("id",data.user.id).maybeSingle();
@@ -115,35 +115,35 @@ async function loginAdmin(){
  await initializeBooks();showBook("buku1");
 }
 async function logout(){await db.auth.signOut();location.reload()}
-async function initializeBooks(){
- const now=new Date(),first=new Date(now.getFullYear(),now.getMonth(),1),last=new Date(now.getFullYear(),now.getMonth()+1,0);
+fungsi asinkron initializeBooks(){
+ const now = new Date(), first = new Date(now.getFullYear(), now.getMonth(), 1), last = new Date(now.getFullYear(), now.getMonth() + 1, 0);
  const start=todayISO(first),end=todayISO(last),name=monthName(now)+" "+now.getFullYear();
- let {data,error}=await db.from("periode_buku").select("*").eq("tanggal_mulai",start).maybeSingle();
+ biarkan {data,error}=menunggu db.from("periode_buku").select("*").eq("tanggal_mulai",start).maybeSingle();
  if(error){alert("Gagal membaca periode: "+error.message);return}
- if(!data){
-  const ins=await db.from("periode_buku").insert({nama_periode:name,tanggal_mulai:start,tanggal_selesai:end,status:"aktif"}).select("*").single();
+ jika (!data){
+  const ins=menunggu db.from("periode_buku").insert({nama_periode:name,tanggal_mulai:start,tanggal_selesai:end,status:"aktif"}).select("*").single();
   if(ins.error){alert("Gagal membuat periode otomatis: "+ins.error.message);return}data=ins.data;
  }
  activePeriod=data;$("periodeInfo").textContent="Periode: "+data.nama_periode;
  await loadMembers();await loadBook("buku1");await loadBook("buku2");await loadStorting();
 }
 function todayISO(d){let x=new Date(d.getTime()-d.getTimezoneOffset()*60000);return x.toISOString().slice(0,10)}
-async function loadMembers(){
- const {data,error}=await db.from("anggota").select("id,no_anggota,nama,alamat,aktif").eq("aktif",true).order("id");
+fungsi asinkron loadMembers(){
+ const {data,error}=menunggu db.from("anggota").select("id,no_anggota,nama,alamat,aktif").eq("aktif",true).order("id");
  if(error){alert("Gagal memuat anggota: "+error.message);return}
- members=data||[];$("loanMember").innerHTML='<option value="">Pilih anggota</option>'+members.map(m=>`<option value="${m.id}">${esc(m.no_anggota)} — ${esc(m.nama)}</option>`).join("");
+ anggota=data||[];$("loanMember").innerHTML='<option value="">Pilih anggota</option>'+members.map(m=>`<option value="${m.id}">${esc(m.no_ anggota)} — ${esc(m.nama)}</option>`).join("");
 }
-function showBook(id){
+fungsi showBook(id){
  document.querySelectorAll(".book").forEach(x=>x.classList.add("hidden"));
  $(""+id).classList.remove("hidden");
- document.querySelectorAll(".menu button").forEach(x=>x.classList.remove("active"));
+ document.querySelectorAll(".tombol menu").forEach(x=>x.classList.remove("aktif"));
  $("btn-"+id).classList.add("active");
- if(id==="buku1")loadBook("buku1");if(id==="buku2")loadBook("buku2");if(id==="storting")loadStorting();
+ jika(id==="buku1")loadBook("buku1");jika(id==="buku2")loadBook("buku2");jika(id==="storting")loadStorting();
 }
-async function getBookRows(kind){
- if(!activePeriod)return [];
- const {data,error}=await db.from("periode_pinjaman").select("id,periode_id,pinjaman_id,jenis_buku,saldo_awal").eq("periode_id",activePeriod.id).eq("jenis_buku",kind).order("id");
- if(error){console.error(error);return []}
+fungsi asinkron getBookRows(kind){
+ jika (!activePeriod) kembalikan [];
+ const {data,error}=menunggu db.from("periode_pinjaman").select("id,periode_id,pinjaman_id,jenis_buku,saldo_awal").eq("periode_id",activePeriod.id).eq("jenis_buku",kind).order("id");
+ jika terjadi kesalahan {console.error(error); return []}
  const pp=data||[];if(!pp.length)return [];
  const loanIds=[...new Set(pp.map(x=>x.pinjaman_id))];
  const [{data:loans,error:le},{data:payments,error:be},{data:mems}]=await Promise.all([
@@ -151,93 +151,93 @@ async function getBookRows(kind){
   db.from("transaksi_bayar").select("periode_pinjaman_id,tanggal_bayar,jumlah_bayar").in("periode_pinjaman_id",pp.map(x=>x.id)),
   db.from("anggota").select("id,no_anggota,nama,alamat")
  ]);
- if(le||be){console.error(le||be);return []}
- const loanMap=Object.fromEntries((loans||[]).map(x=>[x.id,x])),memMap=Object.fromEntries((mems||[]).map(x=>[x.id,x]));
- return pp.map(r=>({...r,loan:loanMap[r.pinjaman_id]||{},member:memMap[loanMap[r.pinjaman_id]?.anggota_id]||{},payments:(payments||[]).filter(t=>String(t.periode_pinjaman_id)===String(r.id))}));
+ jika (le||be){console.error(le||be);return []}
+ const loanMap = Object.fromEntries((loans || []).map(x => [x.id, x])), memMap = Object.fromEntries((mems || []).map(x => [x.id, x]));
+ return pp.map(r=>({...r,loan:loanMap[r.pinjaman_id]||{},member:memMap[loanMap[r.pinjaman_id]?. anggota_id]||{},payments:(payments||[]).filter(t=>String(t.periode_pinjaman_id)===String(r.id))}));
 }
-async function loadBook(kind){
- const rows=await getBookRows(kind);currentLoans[kind]=rows;
+fungsi asinkron loadBook(jenis){
+ const rows = await getBookRows(kind); currentLoans[kind] = rows;
  const target=kind==="buku1"?"book1Table":"book2Table";
  renderLedger(target,rows,kind);
 }
-function renderLedger(target,rows,kind){
+fungsi renderLedger(target,rows,kind){
  let h='<table><thead><tr><th>NO.</th><th>TGL DROP</th><th>NO. ANGGOTA</th><th class="name">NAMA NASABAH</th><th class="name">ALAMAT</th><th>BESAR PINJAMAN</th><th>SALDO AWAL</th>';
- for(let d=1;d<=31;d++)h+=`<th>${d}</th>`;
+ untuk(let d=1;d<=31;d++)h+=`<th>${d}</th>`;
  h+='<th>JUMLAH BAYAR</th><th>SISA SALDO</th></tr></thead><tbody>';
  const daily=Array(31).fill(0);let sumPay=0;
- rows.forEach((r,index)=>{
+ baris.forEach((r,index)=>{
   const l=r.loan,m=r.member,day=Array(31).fill(0);
   r.payments.forEach(p=>{let n=Number(String(p.tanggal_bayar).slice(8,10));if(n>=1&&n<=31)day[n-1]+=Number(p.jumlah_bayar||0)});
-  const total=day.reduce((a,b)=>a+b,0);sumPay+=total;day.forEach((v,i)=>daily[i]+=v);
+  const total = day.reduce((a, b) => a + b, 0); sumPay += total; day.forEach((v, i) => daily[i] += v);
   h+=`<tr><td>${index+1}</td><td>${esc(l.tanggal_drop)}</td><td>${esc(m.no_anggota)}<br>${esc(l.no_pinjaman)}</td><td class="name">${esc(m.nama)}</td><td class="name">${esc(m.alamat)}</td><td>${money(l.besar_pinjaman)}</td><td>${money(r.saldo_awal)}</td>`;
-  day.forEach((v,i)=>h+=`<td><button class="cellbtn" onclick="addPayment('${r.id}','${kind}','${activePeriod.id}',${i+1})">${v?money(v):"+"}</button></td>`);
+  hari.forEach((v,i)=>h+=`<td><button class="cellbtn" onclick="addPayment('${r.id}','${kind}','${activePeriod.id}',${i+1})">${v?money(v):"+"}</button></td>`);
   h+=`<td>${money(total)}</td><td>${money(l.sisa_saldo)}</td></tr>`;
  });
  // Buku manual tetap menampilkan baris kosong meskipun belum ada nasabah.
- const blankRows=Math.max(20,30-rows.length);
- for(let i=0;i<blankRows;i++){
-  h+='<tr><td>&nbsp;</td><td></td><td></td><td class="name"></td><td class="name"></td><td></td><td></td>';
-  for(let d=1;d<=31;d++)h+='<td></td>';
-  h+='<td></td><td></td></tr>';
+ const blankRows = Math.max(20, 30 - rows.length);
+ untuk (misalkan i=0;i<blankRows;i++){
+  h+='<tr><td> </td><td></td><td></td><td class="name"></td><td class="name"></td><td></td><td></td>';
+  untuk(misalkan d=1;d<=31;d++)h+='<td></td>';
+  h++'<td></td><td></td></tr>';
  }
- h+='<tr><th colspan="7">JUMLAH STORTING HARIAN</th>';daily.forEach(v=>h+=`<th>${v?money(v):""}</th>`);h+=`<th>${money(sumPay)}</th><th></th></tr></tbody></table>';
+ h+='<tr><th colspan="7">JUMLAH STORTING HARIAN</th>';daily.forEach(v=>h+=`<th>${v?money(v):""}</th>`);h+=`<th>${money(sumPay)}</th><th></th></tr></tbody></table>`;
  $(target).innerHTML=h;
 }
-async function saveLoan(){
+fungsi asinkron saveLoan(){
  if(!activePeriod){msg("loanMsg","Periode belum tersedia.","error");return}
  const anggota_id=$("loanMember").value,no_pinjaman=$("loanNo").value.trim(),tanggal_drop=$("loanDate").value;
- const besar_pinjaman=Number($("loanAmount").value),jasa=Number($("loanFee").value||0),total_kewajiban=Number($("loanTotal").value);
+ const besar_pinjaman=Nomor($("loanAmount").value),jasa=Nomor($("loanFee").value||0),total_kewajiban=Nomor($("loanTotal").value);
  if(!anggota_id||!no_pinjaman||!tanggal_drop||besar_pinjaman<=0||total_kewajiban<=0||jasa<0){msg("loanMsg","Lengkapi data pinjaman dengan benar.","error");return}
- const {data,error}=await db.from("pinjaman").insert({anggota_id,no_pinjaman,tanggal_drop,besar_pinjaman,jasa,total_kewajiban,sisa_saldo:total_kewajiban,status:"aktif"}).select("id").single();
- if(error){msg("loanMsg","Gagal: "+error.message,"error");return}
- const {error:pe}=await db.from("periode_pinjaman").insert({periode_id:activePeriod.id,pinjaman_id:data.id,jenis_buku:"buku1",saldo_awal:total_kewajiban});
+ const {data,error}=menunggu db.from("pinjaman").insert({anggota_id,no_pinjaman,tanggal_drop,besar_pinjaman,jasa,total_kewajiban,sisa_saldo:total_kewajiban,status:"aktif"}).select("id").single();
+ jika terjadi kesalahan {msg("loanMsg","Gagal: "+error.message,"error");return}
+ const {error:pe}=menunggu db.from("periode_pinjaman").insert({periode_id:activePeriod.id,pinjaman_id:data.id,jenis_buku:"buku1",saldo_awal:total_kewajiban});
  if(pe){msg("loanMsg","Pinjaman dibuat tetapi gagal dicatat ke Buku I: "+pe.message,"error");return}
  msg("loanMsg","Pinjaman berhasil masuk Buku I.","success");
  ["loanNo","loanDate","loanAmount","loanTotal"].forEach(x=>$(x).value="");$("loanFee").value="0";await loadBook("buku1");
 }
-async function addPayment(ppid,kind,periodId,day){
- const row=currentLoans[kind].find(x=>String(x.id)===String(ppid));if(!row)return;
- const defaultDate=String(activePeriod.tanggal_mulai).slice(0,8)+String(day).padStart(2,"0");
- const date=prompt("Tanggal pembayaran (YYYY-MM-DD):",defaultDate);if(date===null)return;
+fungsi asinkron addPayment(ppid,kind,periodId,day){
+ const row = currentLoans[kind].find(x => String(x.id) === String(ppid)); if (!row) return;
+ const defaultDate = String(activePeriod.tanggal_mulai).slice(0, 8) + String(day).padStart(2, "0");
+ const date = prompt("Tanggal pembayaran (YYYY-MM-DD):", defaultDate); if (date == null) return;
  if(!/^\d{4}-\d{2}-\d{2}$/.test(date)){alert("Format tanggal harus YYYY-MM-DD.");return}
  const amount=Number(prompt("Jumlah pembayaran (Rp):",""));if(!Number.isFinite(amount)||amount<=0){alert("Jumlah pembayaran tidak valid.");return}
  if(amount>Number(row.loan.sisa_saldo||0)){alert("Pembayaran melebihi sisa saldo pinjaman.");return}
- const {error}=await db.from("transaksi_bayar").insert({periode_pinjaman_id:ppid,tanggal_bayar:date,jumlah_bayar:amount});
+ const {error}=menunggu db.from("transaksi_bayar").insert({periode_pinjaman_id:ppid,tanggal_bayar:date,jumlah_bayar:amount});
  if(error){alert("Gagal menyimpan pembayaran: "+error.message);return}
  await loadBook(kind);await loadStorting();
 }
-async function carryForward(){
+fungsi async carryForward(){
  if(!activePeriod){msg("carryMsg","Periode tidak tersedia.","error");return}
- const nextStart=new Date(activePeriod.tanggal_selesai+"T00:00:00");nextStart.setDate(nextStart.getDate()+1);
- const nextEnd=new Date(nextStart.getFullYear(),nextStart.getMonth()+1,0);
+ const nextStart = new Date(activePeriod.tanggal_selesai + "T00:00:00"); nextStart.setDate(nextStart.getDate() + 1);
+ const nextEnd = new Date(nextStart.getFullYear(), nextStart.getMonth() + 1, 0);
  const start=todayISO(nextStart),end=todayISO(nextEnd),name=monthName(nextStart)+" "+nextStart.getFullYear();
- let {data:dest,error}=await db.from("periode_buku").select("*").eq("tanggal_mulai",start).maybeSingle();
+ let {data:dest,error}=menunggu db.from("periode_buku").select("*").eq("tanggal_mulai",start).maybeSingle();
  if(error){msg("carryMsg","Gagal membaca periode berikutnya: "+error.message,"error");return}
  if(!dest){const ins=await db.from("periode_buku").insert({nama_periode:name,tanggal_mulai:start,tanggal_selesai:end,status:"aktif"}).select("*").single();if(ins.error){msg("carryMsg","Gagal membuat periode berikutnya: "+ins.error.message,"error");return}dest=ins.data}
  const {data:src,error:se}=await db.from("periode_pinjaman").select("pinjaman_id").eq("periode_id",activePeriod.id);
  if(se){msg("carryMsg","Gagal membaca pinjaman: "+se.message,"error");return}
- let moved=0,skip=0;
- for(const item of (src||[])){
+ misalkan moved=0,skip=0;
+ untuk(konstanta item dari (src||[])){
   const {data:loan,error:le}=await db.from("pinjaman").select("sisa_saldo").eq("id",item.pinjaman_id).single();
   if(le){msg("carryMsg","Gagal membaca saldo pinjaman: "+le.message,"error");return}
-  const balance=Number(loan.sisa_saldo||0);if(balance<=0){skip++;continue}
+  const balance = Number(loan.sisa_saldo || 0); if (balance <= 0) { skip++; continue}
   const {data:exists,error:ee}=await db.from("periode_pinjaman").select("id").eq("periode_id",dest.id).eq("pinjaman_id",item.pinjaman_id).maybeSingle();
   if(ee){msg("carryMsg","Gagal memeriksa periode tujuan: "+ee.message,"error");return}
-  if(exists){skip++;continue}
-  const {error:ie}=await db.from("periode_pinjaman").insert({periode_id:dest.id,pinjaman_id:item.pinjaman_id,jenis_buku:"buku2",saldo_awal:balance});
-  if(ie){msg("carryMsg","Gagal memindahkan saldo: "+ie.message,"error");return}moved++;
+  jika (ada){lewati++;lanjutkan}
+  const {error:ie}=menunggu db.from("periode_pinjaman").insert({periode_id:dest.id,pinjaman_id:item.pinjaman_id,jenis_buku:"buku2",saldo_awal:balance});
+  if(ie){msg("carryMsg","Gagal menyimpan saldo: "+ie.message,"error");return}moved++;
  }
- msg("carryMsg",`${moved} pinjaman dibawa ke Buku II periode ${name}. ${skip} dilewati karena lunas atau sudah tercatat.`,"success");
+ msg("carryMsg",`${moved} pinjaman dibawa ke Buku II periode ${name}. ${skip} dilewati karena lunas atau sudah dicatat.`,"success");
 }
-async function loadStorting(){
- if(!activePeriod)return;
- const {data:pp,error:pe}=await db.from("periode_pinjaman").select("id,jenis_buku").eq("periode_id",activePeriod.id);
+fungsi asinkron loadStorting(){
+ jika (!activePeriod) kembali;
+ const {data:pp,error:pe}=menunggu db.from("periode_pinjaman").select("id,jenis_buku").eq("periode_id",activePeriod.id);
  if(pe){$("stortingTable").textContent=pe.message;return}
  const ids=(pp||[]).map(x=>x.id);if(!ids.length){$("stortingTable").innerHTML='<div class="card">Belum ada pembayaran pada periode ini.</div>';return}
- const {data:payments,error}=await db.from("transaksi_bayar").select("periode_pinjaman_id,tanggal_bayar,jumlah_bayar").in("periode_pinjaman_id",ids);
+ const {data:pembayaran,kesalahan}=menunggu db.from("transaksi_bayar").select("periode_pinjaman_id,tanggal_bayar,jumlah_bayar").in("periode_pinjaman_id",ids);
  if(error){$("stortingTable").textContent=error.message;return}
  const sums={};
- (payments||[]).forEach(p=>{const r=pp.find(x=>String(x.id)===String(p.periode_pinjaman_id));const d=p.tanggal_bayar;if(!sums[d])sums[d]={buku1:0,buku2:0};sums[d][r.jenis_buku]+=Number(p.jumlah_bayar||0)});
+ (pembayaran||[]).forEach(p=>{const r=pp.find(x=>String(x.id)===String(p.periode_pinjaman_id));const d=p.tanggal_bayar;if(!sums[d])sums[d]={buku1:0,buku2:0};sums[d][r.jenis_buku]+=Number(p.jumlah_bayar||0)});
  let h='<table style="min-width:650px"><thead><tr><th>TANGGAL</th><th>BUKU II</th><th>BUKU I</th><th>JUMLAH STORTING</th><th>GLOBAL STORTING</th></tr></thead><tbody>';
  let global=0;Object.keys(sums).sort().forEach(d=>{let x=sums[d],total=x.buku1+x.buku2;global+=total;h+=`<tr><td>${d}</td><td>${money(x.buku2)}</td><td>${money(x.buku1)}</td><td>${money(total)}</td><td>${money(global)}</td></tr>`});
  h+=`<tr><th>TOTAL</th><th>${money(Object.values(sums).reduce((a,x)=>a+x.buku2,0))}</th><th>${money(Object.values(sums).reduce((a,x)=>a+x.buku1,0))}</th><th>${money(global)}</th><th></th></tr></tbody></table>`;
