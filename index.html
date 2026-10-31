@@ -25,6 +25,9 @@ th{background:#e2e8e4;position:sticky;top:0;z-index:3;font-weight:700}
 td.name,th.name{text-align:left;min-width:145px}
 td.fixedcol{background:#fff;position:sticky;z-index:1}th.fixedcol{position:sticky;z-index:4;background:#e2e8e4}
 td.money{text-align:right}
+.cellinput{width:100%;min-width:72px;padding:7px 5px;border:0;border-radius:0;background:transparent;text-align:center;font-size:12px}
+.cellinput:focus{outline:2px solid #146c50;background:#f1fff7}
+.saveRow{font-size:11px;padding:7px 8px;white-space:nowrap}
 .booktitle{text-align:center;margin:4px 0 12px}
 .formrow{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:8px;align-items:end}
 .formrow input,.formrow select{width:100%}
@@ -58,20 +61,7 @@ td.money{text-align:right}
 <section id="buku1" class="book hidden">
 <div class="card">
 <h3 class="booktitle">BUKU I</h3>
-<div class="muted">Tabel bergaris seperti buku manual. Geser ke kanan/kiri dan ke atas/bawah untuk melihat seluruh halaman.</div>
-<p><button class="small" onclick="document.getElementById('formPinjaman').classList.toggle('hidden')">+ Tambah pinjaman</button></p>
-<div id="formPinjaman" class="hidden">
-<div class="formrow">
-<div><label>No. Anggota</label><select id="loanMember"></select></div>
-<div><label>No. Pinjaman</label><input id="loanNo" placeholder="Nomor pinjaman"></div>
-<div><label>Tanggal drop</label><input id="loanDate" type="date"></div>
-<div><label>Besar pinjaman (Rp)</label><input id="loanAmount" type="number" min="1"></div>
-<div><label>Jasa (Rp)</label><input id="loanFee" type="number" min="0" value="0"></div>
-<div><label>Total kewajiban (Rp)</label><input id="loanTotal" type="number" min="1"></div>
-<div><button onclick="saveLoan()">Simpan pinjaman</button></div>
-</div>
-<p id="loanMsg"></p>
-</div>
+<div class="muted">Isi langsung pada kotak baris kosong. Urutan kolom: TGL, NA, NP, Nama Nasabah, Alamat, Besar Pinjaman, Saldo Awal, lalu pembayaran tanggal 1–31. Tekan SIMPAN pada baris setelah data diisi.</div>
 </div>
 <div class="tablewrap" id="book1Table"></div>
 </section>
@@ -98,7 +88,7 @@ td.money{text-align:right}
 const SUPABASE_URL="https://zatgfcifvpyclemyknxv.supabase.co";
 const SUPABASE_KEY="sb_publishable_GWpranv3E5EzGh4UJB0NkQ_AEmD2kOH";
 const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-let activePeriod=null, members=[], currentLoans={buku1:[],buku2:[]};
+let activePeriod=null, currentLoans={buku1:[],buku2:[]};
 const $=id=>document.getElementById(id);
 const money=n=>"Rp"+Number(n||0).toLocaleString("id-ID");
 const esc=v=>{let s=document.createElement("span");s.textContent=v??"-";return s.innerHTML};
@@ -125,14 +115,9 @@ async function initializeBooks(){
   if(ins.error){alert("Gagal membuat periode otomatis: "+ins.error.message);return}data=ins.data;
  }
  activePeriod=data;$("periodeInfo").textContent="Periode: "+data.nama_periode;
- await loadMembers();await loadBook("buku1");await loadBook("buku2");await loadStorting();
+ await loadBook("buku1");await loadBook("buku2");await loadStorting();
 }
 function todayISO(d){let x=new Date(d.getTime()-d.getTimezoneOffset()*60000);return x.toISOString().slice(0,10)}
-async function loadMembers(){
- const {data,error}=await db.from("anggota").select("id,no_anggota,nama,alamat,aktif").eq("aktif",true).order("id");
- if(error){alert("Gagal memuat anggota: "+error.message);return}
- members=data||[];$("loanMember").innerHTML='<option value="">Pilih anggota</option>'+members.map(m=>`<option value="${m.id}">${esc(m.no_anggota)} — ${esc(m.nama)}</option>`).join("");
-}
 function showBook(id){
  document.querySelectorAll(".book").forEach(x=>x.classList.add("hidden"));
  $(""+id).classList.remove("hidden");
@@ -161,39 +146,63 @@ async function loadBook(kind){
  renderLedger(target,rows,kind);
 }
 function renderLedger(target,rows,kind){
- let h='<table><thead><tr><th>NO.</th><th>TGL DROP</th><th>NO. ANGGOTA</th><th class="name">NAMA NASABAH</th><th class="name">ALAMAT</th><th>BESAR PINJAMAN</th><th>SALDO AWAL</th>';
+ let h='<table><thead><tr><th>TGL</th><th>NA</th><th>NP</th><th class="name">NAMA NASABAH</th><th class="name">ALAMAT</th><th>BESAR PINJAMAN</th><th>SALDO AWAL</th>';
  for(let d=1;d<=31;d++)h+=`<th>${d}</th>`;
- h+='<th>JUMLAH BAYAR</th><th>SISA SALDO</th></tr></thead><tbody>';
+ h+='<th>JUMLAH BAYAR</th><th>SISA SALDO</th><th>AKSI</th></tr></thead><tbody>';
  const daily=Array(31).fill(0);let sumPay=0;
  rows.forEach((r,index)=>{
   const l=r.loan,m=r.member,day=Array(31).fill(0);
   r.payments.forEach(p=>{let n=Number(String(p.tanggal_bayar).slice(8,10));if(n>=1&&n<=31)day[n-1]+=Number(p.jumlah_bayar||0)});
   const total=day.reduce((a,b)=>a+b,0);sumPay+=total;day.forEach((v,i)=>daily[i]+=v);
-  h+=`<tr><td>${index+1}</td><td>${esc(l.tanggal_drop)}</td><td>${esc(m.no_anggota)}<br>${esc(l.no_pinjaman)}</td><td class="name">${esc(m.nama)}</td><td class="name">${esc(m.alamat)}</td><td>${money(l.besar_pinjaman)}</td><td>${money(r.saldo_awal)}</td>`;
+  h+=`<tr><td>${esc(l.tanggal_drop)}</td><td>${esc(m.no_anggota)}</td><td>${esc(l.no_pinjaman)}</td><td class="name">${esc(m.nama)}</td><td class="name">${esc(m.alamat)}</td><td>${money(l.besar_pinjaman)}</td><td>${money(r.saldo_awal)}</td>`;
   day.forEach((v,i)=>h+=`<td><button class="cellbtn" onclick="addPayment('${r.id}','${kind}','${activePeriod.id}',${i+1})">${v?money(v):"+"}</button></td>`);
-  h+=`<td>${money(total)}</td><td>${money(l.sisa_saldo)}</td></tr>`;
+  h+=`<td>${money(total)}</td><td>${money(l.sisa_saldo)}</td><td>—</td></tr>`;
  });
- // Buku manual tetap menampilkan baris kosong meskipun belum ada nasabah.
+ // Buku kosong: setiap kotak input bisa diklik dan diisi langsung.
  const blankRows=Math.max(20,30-rows.length);
  for(let i=0;i<blankRows;i++){
-  h+='<tr><td>&nbsp;</td><td></td><td></td><td class="name"></td><td class="name"></td><td></td><td></td>';
+  const n=rows.length+i;
+  if(kind==="buku1"){
+   h+=`<tr>
+   <td><input class="cellinput" id="${kind}-date-${n}" type="date" aria-label="Tanggal drop"></td>
+   <td><input class="cellinput" id="${kind}-na-${n}" placeholder="NA" aria-label="Nomor anggota"></td>
+   <td><input class="cellinput" id="${kind}-np-${n}" placeholder="NP" aria-label="Nomor pinjaman"></td>
+   <td><input class="cellinput" id="${kind}-name-${n}" placeholder="Nama nasabah" aria-label="Nama nasabah"></td>
+   <td><input class="cellinput" id="${kind}-address-${n}" placeholder="Alamat" aria-label="Alamat"></td>
+   <td><input class="cellinput" id="${kind}-amount-${n}" type="number" min="1" placeholder="Rp" aria-label="Besar pinjaman"></td>
+   <td class="money">—</td>`;
+  }else{
+   h+='<tr><td></td><td></td><td></td><td class="name"></td><td class="name"></td><td></td><td></td>';
+  }
   for(let d=1;d<=31;d++)h+='<td></td>';
-  h+='<td></td><td></td></tr>';
+  h+=kind==="buku1"?`<td>—</td><td>—</td><td><button class="saveRow" onclick="saveInlineLoan('${kind}',${n})">SIMPAN</button></td></tr>`:'<td></td><td></td><td></td></tr>';
  }
- h+='<tr><th colspan="7">JUMLAH STORTING HARIAN</th>';daily.forEach(v=>h+=`<th>${v?money(v):""}</th>`);h+=`<th>${money(sumPay)}</th><th></th></tr></tbody></table>`;
+ h+='<tr><th colspan="7">JUMLAH STORTING HARIAN</th>';daily.forEach(v=>h+=`<th>${v?money(v):""}</th>`);h+=`<th>${money(sumPay)}</th><th></th><th></th></tr></tbody></table>`;
  $(target).innerHTML=h;
 }
-async function saveLoan(){
- if(!activePeriod){msg("loanMsg","Periode belum tersedia.","error");return}
- const anggota_id=$("loanMember").value,no_pinjaman=$("loanNo").value.trim(),tanggal_drop=$("loanDate").value;
- const besar_pinjaman=Number($("loanAmount").value),jasa=Number($("loanFee").value||0),total_kewajiban=Number($("loanTotal").value);
- if(!anggota_id||!no_pinjaman||!tanggal_drop||besar_pinjaman<=0||total_kewajiban<=0||jasa<0){msg("loanMsg","Lengkapi data pinjaman dengan benar.","error");return}
- const {data,error}=await db.from("pinjaman").insert({anggota_id,no_pinjaman,tanggal_drop,besar_pinjaman,jasa,total_kewajiban,sisa_saldo:total_kewajiban,status:"aktif"}).select("id").single();
- if(error){msg("loanMsg","Gagal: "+error.message,"error");return}
- const {error:pe}=await db.from("periode_pinjaman").insert({periode_id:activePeriod.id,pinjaman_id:data.id,jenis_buku:"buku1",saldo_awal:total_kewajiban});
- if(pe){msg("loanMsg","Pinjaman dibuat tetapi gagal dicatat ke Buku I: "+pe.message,"error");return}
- msg("loanMsg","Pinjaman berhasil masuk Buku I.","success");
- ["loanNo","loanDate","loanAmount","loanTotal"].forEach(x=>$(x).value="");$("loanFee").value="0";await loadBook("buku1");
+async function saveInlineLoan(kind,n){
+ if(kind!=="buku1"){alert("Pinjaman baru dicatat melalui Buku 1.");return}
+ const date=$(`${kind}-date-${n}`).value,na=$(`${kind}-na-${n}`).value.trim(),np=$(`${kind}-np-${n}`).value.trim();
+ const name=$(`${kind}-name-${n}`).value.trim(),address=$(`${kind}-address-${n}`).value.trim(),amount=Number($(`${kind}-amount-${n}`).value);
+ if(!date||!na||!np||!name||!amount||amount<=0){alert("Isi TGL, NA, NP, Nama Nasabah, dan Besar Pinjaman terlebih dahulu.");return}
+ // Cari anggota dengan nomor yang sama; jika belum ada, buat otomatis.
+ let {data:member,error:findError}=await db.from("anggota").select("id").eq("no_anggota",na).maybeSingle();
+ if(findError){alert("Gagal mencari anggota: "+findError.message);return}
+ if(!member){
+  const created=await db.from("anggota").insert({no_anggota:na,nama:name,alamat:address||null,aktif:true}).select("id").single();
+  if(created.error){alert("Gagal menyimpan anggota: "+created.error.message);return}
+  member=created.data;
+ }else{
+  const upd=await db.from("anggota").update({nama:name,alamat:address||null}).eq("id",member.id);
+  if(upd.error){alert("Gagal memperbarui data anggota: "+upd.error.message);return}
+ }
+ // Nilai jasa awal 0; total kewajiban dimulai sebesar pinjaman.
+ const loan=await db.from("pinjaman").insert({anggota_id:member.id,no_pinjaman:np,tanggal_drop:date,besar_pinjaman:amount,jasa:0,total_kewajiban:amount,sisa_saldo:amount,status:"aktif"}).select("id").single();
+ if(loan.error){alert("Gagal menyimpan pinjaman: "+loan.error.message);return}
+ const link=await db.from("periode_pinjaman").insert({periode_id:activePeriod.id,pinjaman_id:loan.data.id,jenis_buku:"buku1",saldo_awal:amount});
+ if(link.error){alert("Pinjaman tersimpan, tetapi gagal masuk Buku 1: "+link.error.message);return}
+ alert("Data nasabah dan pinjaman berhasil disimpan.");
+ await loadBook("buku1");
 }
 async function addPayment(ppid,kind,periodId,day){
  const row=currentLoans[kind].find(x=>String(x.id)===String(ppid));if(!row)return;
