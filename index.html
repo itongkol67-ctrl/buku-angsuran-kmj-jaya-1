@@ -1,247 +1,265 @@
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aplikasi Lapangan Koperasi</title>
-    <!-- Tailwind CSS untuk styling cepat dan rapi di HP -->
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <!-- Supabase JS Client -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Buku Angsuran KMJ Jaya</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f1f5f9;color:#172033}
+header{background:#123b32;color:white;padding:20px}
+header h2{margin:0}
+.container{max-width:1100px;margin:25px auto;padding:15px}
+.card{background:white;padding:20px;border-radius:12px;margin-bottom:18px;box-shadow:0 2px 8px #0001}
+input,button{padding:12px;border-radius:7px;border:1px solid #ccd3dc;font-size:15px}
+input{width:100%;margin:7px 0 13px}
+button{background:#146c50;color:white;border:0;cursor:pointer}
+button:hover{background:#0d513b}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:15px}
+.stat{background:#e6f4ed;padding:18px;border-radius:10px}
+.stat strong{font-size:26px;display:block;margin-top:8px}
+table{width:100%;border-collapse:collapse;min-width:550px}
+th,td{text-align:left;padding:12px;border-bottom:1px solid #ddd}
+.tablewrap{overflow-x:auto}
+.hidden{display:none}
+.error{color:#b91c1c}
+.success{color:#087443}
+nav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+nav button{background:#31594e}
+</style>
 </head>
-<body class="bg-slate-100 font-sans text-slate-800">
+<body>
 
-    <div class="max-w-md mx-auto min-h-screen bg-white shadow-lg flex flex-col">
-        <!-- Header Aplikasi -->
-        <header class="bg-emerald-700 text-white p-4 shadow-md">
-            <h1 class="text-lg font-bold">Koperasi Lapangan</h1>
-            <p class="text-xs text-emerald-100">Input Setoran & Data Nasabah</p>
-        </header>
+<header>
+<h2>BUKU ANGSURAN KMJ JAYA</h2>
+<p>Sistem Administrasi dan Pembayaran Angsuran</p>
+</header>
 
-        <!-- Konten Utama -->
-        <main class="p-4 flex-1 space-y-6">
-            
-            <!-- Tab Menu (Pilih Aksi) -->
-            <div class="flex rounded-lg bg-slate-200 p-1 text-sm font-medium">
-                <button onclick="switchTab('setoran')" id="btn-setoran" class="flex-1 py-2 rounded-md bg-white shadow text-emerald-700 transition">Setoran Harian</button>
-                <button onclick="switchTab('nasabah')" id="btn-nasabah" class="flex-1 py-2 rounded-md text-slate-600 transition">Tambah Nasabah</button>
-            </div>
+<div class="container">
 
-            <!-- FORM 1: INPUT SETORAN HARIAN -->
-            <section id="form-setoran" class="space-y-4">
-                <h2 class="text-base font-semibold text-slate-700 border-b pb-2">Catat Setoran Harian</h2>
-                
-                <div>
-                    <label class="block text-xs font-medium text-slate-600 mb-1">Pilih / Cari Nasabah</label>
-                    <select id="select-nasabah" class="w-full rounded-lg border border-slate-300 p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
-                        <option value="">-- Memuat Data Nasabah --</option>
-                    </select>
-                </div>
+<section id="login" class="card">
+<h2>Login Admin</h2>
+<label>Email</label>
+<input id="email" type="email" placeholder="Masukkan email admin">
+<label>Password</label>
+<input id="password" type="password" placeholder="Masukkan password">
+<button onclick="loginAdmin()">Masuk</button>
+<p id="pesanLogin"></p>
+</section>
 
-                <div>
-                    <label class="block text-xs font-medium text-slate-600 mb-1">Tanggal Bayar</label>
-                    <input type="date" id="tanggal_bayar" class="w-full rounded-lg border border-slate-300 p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
-                </div>
+<section id="app" class="hidden">
+<div class="card">
+<strong id="namaAdmin">Administrator</strong>
+<button onclick="logout()" style="float:right">Keluar</button>
+</div>
 
-                <div>
-                    <label class="block text-xs font-medium text-slate-600 mb-1">Jumlah Bayar (Rp)</label>
-                    <input type="number" id="jumlah_bayar" placeholder="Contoh: 150000" class="w-full rounded-lg border border-slate-300 p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
-                </div>
+<nav>
+<button onclick="tampil('dashboard')">Dashboard</button>
+<button onclick="tampil('anggota')">Data Anggota</button>
+<button onclick="tampil('pinjaman')">Data Pinjaman</button>
+<button onclick="tampil('pembayaran')">Pembayaran</button>
+</nav>
 
-                <div>
-                    <label class="block text-xs font-medium text-slate-600 mb-1">Nama / ID Petugas</label>
-                    <input type="text" id="id_petugas" placeholder="Nama Petugas Lapangan" class="w-full rounded-lg border border-slate-300 p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
-                </div>
+<div id="dashboard" class="page">
+<h2>Dashboard</h2>
+<div class="grid">
+<div class="stat">Jumlah Anggota<strong id="jAnggota">0</strong></div>
+<div class="stat">Jumlah Pinjaman<strong id="jPinjaman">0</strong></div>
+<div class="stat">Transaksi Pembayaran<strong id="jBayar">0</strong></div>
+</div>
+</div>
 
-                <button onclick="simpanSetoran()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 rounded-lg text-sm shadow transition">
-                    Simpan Setoran
-                </button>
-            </section>
+<div id="anggota" class="page hidden">
+<div class="card">
+<h2>Tambah Anggota</h2>
+<input id="noAnggota" placeholder="Nomor anggota">
+<input id="namaAnggota" placeholder="Nama anggota">
+<input id="alamat" placeholder="Alamat">
+<input id="wa" placeholder="Nomor WhatsApp">
+<button onclick="tambahAnggota()">Simpan Anggota</button>
+<p id="pesanAnggota"></p>
+</div>
+<div class="card">
+<h2>Daftar Anggota</h2>
+<div class="tablewrap">
+<table>
+<thead><tr><th>No. Anggota</th><th>Nama</th><th>Alamat</th><th>WhatsApp</th><th>Status</th></tr></thead>
+<tbody id="daftarAnggota"></tbody>
+</table>
+</div>
+</div>
+</div>
 
-            <!-- FORM 2: TAMBAH NASABAH BARU -->
-            <section id="form-nasabah" class="space-y-4 hidden">
-                <h2 class="text-base font-semibold text-slate-700 border-b pb-2">Tambah Data Nasabah Baru</h2>
-                
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-medium text-slate-600 mb-1">No. Anggota (NA)</label>
-                        <input type="text" id="no_anggota" placeholder="Cth: 03" class="w-full rounded-lg border border-slate-300 p-2 text-sm outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-medium text-slate-600 mb-1">No. Pinjaman (NP)</label>
-                        <input type="text" id="no_pinjaman" placeholder="Cth: I atau II" class="w-full rounded-lg border border-slate-300 p-2 text-sm outline-none">
-                    </div>
-                </div>
+<div id="pinjaman" class="page hidden">
+<div class="card">
+<h2>Data Pinjaman</h2>
+<p>Modul pencatatan pinjaman akan kita aktifkan setelah data anggota siap.</p>
+</div>
+</div>
 
-                <div>
-                    <label class="block text-xs font-medium text-slate-600 mb-1">Tanggal Drop</label>
-                    <input type="date" id="tanggal_drop" class="w-full rounded-lg border border-slate-300 p-2 text-sm outline-none">
-                </div>
+<div id="pembayaran" class="page hidden">
+<div class="card">
+<h2>Pembayaran Angsuran</h2>
+<p>Modul pembayaran dan perhitungan saldo akan kita lanjutkan setelah struktur data siap.</p>
+</div>
+</div>
+</section>
+</div>
 
-                <div>
-                    <label class="block text-xs font-medium text-slate-600 mb-1">Nama Nasabah</label>
-                    <input type="text" id="nama_nasabah" placeholder="Nama lengkap nasabah" class="w-full rounded-lg border border-slate-300 p-2 text-sm outline-none">
-                </div>
+<script>
+const SUPABASE_URL = "https://zatgfcifvpyclemyknxv.supabase.co";
+const SUPABASE_KEY = "sb_publishable_GWpranv3E5EzGh4UJB0NkQ_AEmD2kOH";
 
-                <div>
-                    <label class="block text-xs font-medium text-slate-600 mb-1">Alamat</label>
-                    <input type="text" id="alamat" placeholder="Cth: M. Bulian / KMP. 6" class="w-full rounded-lg border border-slate-300 p-2 text-sm outline-none">
-                </div>
+const db = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
 
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-medium text-slate-600 mb-1">Besar Pinjaman (Rp)</label>
-                        <input type="number" id="besar_pinjaman" placeholder="700000" class="w-full rounded-lg border border-slate-300 p-2 text-sm outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-medium text-slate-600 mb-1">Sisa Saldo Awal (Rp)</label>
-                        <input type="number" id="sisa_saldo" placeholder="750000" class="w-full rounded-lg border border-slate-300 p-2 text-sm outline-none">
-                    </div>
-                </div>
+async function loginAdmin(){
+ const email=document.getElementById("email").value.trim();
+ const password=document.getElementById("password").value;
+ const pesan=document.getElementById("pesanLogin");
 
-                <div>
-                    <label class="block text-xs font-medium text-slate-600 mb-1">No. WhatsApp</label>
-                    <input type="text" id="no_wa" placeholder="08xxxxxxxxxx" class="w-full rounded-lg border border-slate-300 p-2 text-sm outline-none">
-                </div>
+ pesan.textContent="Memeriksa akun...";
+ pesan.className="";
 
-                <button onclick="simpanNasabah()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-lg text-sm shadow transition">
-                    Simpan Nasabah Baru
-                </button>
-            </section>
+ const {data,error}=await db.auth.signInWithPassword({
+  email,password
+ });
 
-        </main>
-    </div>
+ if(error){
+  pesan.textContent="Login gagal: "+error.message;
+  pesan.className="error";
+  return;
+ }
 
-    <!-- Konfigurasi Skrip JavaScript & Koneksi Supabase -->
-    <script>
-        // URL Supabase milikmu sudah terpasang otomatis di sini
-        const SUPABASE_URL = 'https://zatgfcfivpyclemyknxv.supabase.co';
-        
-        // PENTING: Masukkan Publishable/Anon Key panjang dari Supabase di antara tanda petik di bawah ini:
-        const SUPABASE_ANON_KEY = 'sb_publishable_GWpranv3E5EzGh4UJB0NkQ_AEmD2kOH';
-        
-        const { createClient } = supabase;
-        const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+ const {data:profil,error:profilError}=await db
+  .from("profiles")
+  .select("role")
+  .eq("id",data.user.id)
+  .maybeSingle();
 
-        // Otomatis isi tanggal hari ini pada form
-        document.getElementById('tanggal_bayar').valueAsDate = new Date();
-        document.getElementById('tanggal_drop').valueAsDate = new Date();
+ if(profilError || !profil || profil.role!=="admin"){
+  await db.auth.signOut();
+  pesan.textContent="Akun ini belum memiliki hak akses admin. Periksa tabel profiles.";
+  pesan.className="error";
+  return;
+ }
 
-        // Fungsi Ganti Tab Menu
-        function switchTab(tab) {
-            const formSetoran = document.getElementById('form-setoran');
-            const formNasabah = document.getElementById('form-nasabah');
-            const btnSetoran = document.getElementById('btn-setoran');
-            const btnNasabah = document.getElementById('btn-nasabah');
+ document.getElementById("login").classList.add("hidden");
+ document.getElementById("app").classList.remove("hidden");
+ document.getElementById("namaAdmin").textContent=data.user.email;
+ await muatDashboard();
+}
 
-            if (tab === 'setoran') {
-                formSetoran.classList.remove('hidden');
-                formNasabah.classList.add('hidden');
-                btnSetoran.className = "flex-1 py-2 rounded-md bg-white shadow text-emerald-700 transition";
-                btnNasabah.className = "flex-1 py-2 rounded-md text-slate-600 transition";
-                loadNasabahToSelect();
-            } else {
-                formNasabah.classList.remove('hidden');
-                formSetoran.classList.add('hidden');
-                btnNasabah.className = "flex-1 py-2 rounded-md bg-white shadow text-blue-700 transition";
-                btnSetoran.className = "flex-1 py-2 rounded-md text-slate-600 transition";
-            }
-        }
+async function logout(){
+ await db.auth.signOut();
+ location.reload();
+}
 
-        // Ambil data nasabah untuk pilihan dropdown setoran
-        async function loadNasabahToSelect() {
-            const select = document.getElementById('select-nasabah');
-            select.innerHTML = '<option value="">-- Memuat Data --</option>';
-            
-            const { data, error } = await _supabase.from('nasabah').select('id, nama_nasabah, alamat').order('nama_nasabah', { ascending: true });
-            
-            if (error) {
-                console.error('Gagal memuat nasabah:', error);
-                select.innerHTML = '<option value="">Gagal memuat data</option>';
-                return;
-            }
+function tampil(id){
+ document.querySelectorAll(".page").forEach(x=>x.classList.add("hidden"));
+ document.getElementById(id).classList.remove("hidden");
+ if(id==="anggota") muatAnggota();
+}
 
-            select.innerHTML = '<option value="">-- Pilih Nasabah --</option>';
-            data.forEach(n => {
-                let opt = document.createElement('option');
-                opt.value = n.id;
-                opt.textContent = `${n.nama_nasabah} (${n.alamat || 'Tanpa Alamat'})`;
-                select.appendChild(opt);
-            });
-        }
+async function muatDashboard(){
+ const [a,p,b]=await Promise.all([
+  db.from("anggota").select("id",{count:"exact",head:true}),
+  db.from("pinjaman").select("id",{count:"exact",head:true}),
+  db.from("transaksi_bayar").select("id",{count:"exact",head:true})
+ ]);
 
-        // Simpan Data Nasabah Baru ke Supabase
-        async function simpanNasabah() {
-            const no_anggota = document.getElementById('no_anggota').value;
-            const no_pinjaman = document.getElementById('no_pinjaman').value;
-            const tanggal_drop = document.getElementById('tanggal_drop').value;
-            const nama_nasabah = document.getElementById('nama_nasabah').value;
-            const alamat = document.getElementById('alamat').value;
-            const besar_pinjaman = parseFloat(document.getElementById('besar_pinjaman').value) || 0;
-            const sisa_saldo = parseFloat(document.getElementById('sisa_saldo').value) || 0;
-            const no_wa = document.getElementById('no_wa').value;
+ document.getElementById("jAnggota").textContent=a.count??"-";
+ document.getElementById("jPinjaman").textContent=p.count??"-";
+ document.getElementById("jBayar").textContent=b.count??"-";
+}
 
-            if (!nama_nasabah) {
-                alert('Nama nasabah wajib diisi!');
-                return;
-            }
+async function tambahAnggota(){
+ const no=document.getElementById("noAnggota").value.trim();
+ const nama=document.getElementById("namaAnggota").value.trim();
+ const alamat=document.getElementById("alamat").value.trim();
+ const wa=document.getElementById("wa").value.trim();
+ const pesan=document.getElementById("pesanAnggota");
 
-            const { error } = await _supabase.from('nasabah').insert([{
-                no_anggota, no_pinjaman, tanggal_drop, nama_nasabah, alamat, besar_pinjaman, sisa_saldo, no_wa
-            }]);
+ if(!no || !nama){
+  pesan.textContent="Nomor anggota dan nama wajib diisi.";
+  pesan.className="error";
+  return;
+ }
 
-            if (error) {
-                alert('Gagal menyimpan: ' + error.message);
-            } else {
-                alert('Data nasabah berhasil disimpan!');
-                // Bersihkan form
-                document.getElementById('nama_nasabah').value = '';
-                document.getElementById('besar_pinjaman').value = '';
-                document.getElementById('sisa_saldo').value = '';
-                document.getElementById('no_wa').value = '';
-                switchTab('setoran');
-            }
-        }
+ const {error}=await db.from("anggota").insert({
+  no_anggota:no,
+  nama:nama,
+  alamat:alamat||null,
+  no_wa:wa||null,
+  aktif:true
+ });
 
-        // Simpan Transaksi Setoran & Update Sisa Saldo Otomatis
-        async function simpanSetoran() {
-            const id_nasabah = document.getElementById('select-nasabah').value;
-            const tanggal_bayar = document.getElementById('tanggal_bayar').value;
-            const jumlah_bayar = parseFloat(document.getElementById('jumlah_bayar').value) || 0;
-            const id_petugas = document.getElementById('id_petugas').value;
+ if(error){
+  pesan.textContent="Gagal menyimpan: "+error.message;
+  pesan.className="error";
+  return;
+ }
 
-            if (!id_nasabah || jumlah_bayar <= 0) {
-                alert('Pilih nasabah dan masukkan jumlah bayar dengan benar!');
-                return;
-            }
+ pesan.textContent="Anggota berhasil disimpan.";
+ pesan.className="success";
 
-            // 1. Simpan ke tabel transaksi_bayar
-            const { error: errTrans } = await _supabase.from('transaksi_bayar').insert([{
-                id_nasabah, tanggal_bayar, jumlah_bayar, id_petugas
-            }]);
+ ["noAnggota","namaAnggota","alamat","wa"].forEach(id=>{
+  document.getElementById(id).value="";
+ });
 
-            if (errTrans) {
-                alert('Gagal menyimpan setoran: ' + errTrans.message);
-                return;
-            }
+ await muatAnggota();
+ await muatDashboard();
+}
 
-            // 2. Ambil sisa_saldo saat ini dari tabel nasabah
-            const { data: dataNasabah, errGet } = await _supabase.from('nasabah').select('sisa_saldo').eq('id', id_nasabah).single();
-            
-            if (dataNasabah) {
-                let saldoBaru = (dataNasabah.sisa_saldo || 0) - jumlah_bayar;
-                if (saldoBaru < 0) saldoBaru = 0;
+async function muatAnggota(){
+ const {data,error}=await db
+  .from("anggota")
+  .select("no_anggota,nama,alamat,no_wa,aktif")
+  .order("id",{ascending:true});
 
-                // 3. Update sisa_saldo terbaru di tabel nasabah secara otomatis
-                await _supabase.from('nasabah').update({ sisa_saldo: saldoBaru }).eq('id', id_nasabah);
-            }
+ const tbody=document.getElementById("daftarAnggota");
 
-            alert('Setoran berhasil dicatat & saldo otomatis terupdate!');
-            document.getElementById('jumlah_bayar').value = '';
-        }
+ if(error){
+  tbody.innerHTML="<tr><td colspan='5'>Gagal memuat: "+error.message+"</td></tr>";
+  return;
+ }
 
-        // Jalankan saat halaman pertama kali dibuka
-        loadNasabahToSelect();
-    </script>
+ tbody.innerHTML=data.map(x=>`
+  <tr>
+   <td>${aman(x.no_anggota)}</td>
+   <td>${aman(x.nama)}</td>
+   <td>${aman(x.alamat)}</td>
+   <td>${aman(x.no_wa)}</td>
+   <td>${x.aktif?"Aktif":"Tidak aktif"}</td>
+  </tr>
+ `).join("");
+}
+
+function aman(nilai){
+ const el=document.createElement("span");
+ el.textContent=nilai??"-";
+ return el.innerHTML;
+}
+
+db.auth.getSession().then(async ({data})=>{
+ if(data.session){
+  const {data:profil}=await db.from("profiles")
+   .select("role").eq("id",data.session.user.id).maybeSingle();
+
+  if(profil?.role==="admin"){
+   document.getElementById("login").classList.add("hidden");
+   document.getElementById("app").classList.remove("hidden");
+   document.getElementById("namaAdmin").textContent=data.session.user.email;
+   muatDashboard();
+  }else{
+   await db.auth.signOut();
+  }
+ }
+});
+</script>
 </body>
 </html>
