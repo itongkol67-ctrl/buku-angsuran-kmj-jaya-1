@@ -2,237 +2,241 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Buku Angsuran KMJ Jaya</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root{--green:#123b32;--green2:#146c50;--bg:#f1f5f9;--line:#d9e1e8;--ink:#172033}
-*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--ink)}
-header{background:var(--green);color:#fff;padding:18px 22px}header h2{margin:0 0 5px}
-.container{max-width:1500px;margin:20px auto;padding:0 14px}
-.card{background:#fff;padding:18px;border-radius:12px;margin-bottom:16px;box-shadow:0 2px 8px #0001}
-input,select,button{padding:10px;border:1px solid #cbd5e1;border-radius:7px;font-size:14px}
-input,select{width:100%;background:#fff}label{display:block;font-weight:600;font-size:13px;margin:8px 0 5px}
-button{background:var(--green2);color:white;border:0;cursor:pointer;font-weight:600}button.secondary{background:#475569}button.danger{background:#a83232}button:disabled{opacity:.5;cursor:not-allowed}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
-.stat{background:#e6f4ed;padding:16px;border-radius:9px}.stat strong{display:block;font-size:25px;margin-top:7px}
-nav{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 18px}nav button{background:#31594e}
-.hidden{display:none!important}.muted{color:#64748b}.error{color:#b91c1c}.success{color:#087443}
-.formgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
-.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:8px}
-table{border-collapse:collapse;width:100%;min-width:900px;font-size:12px}
-th,td{padding:8px 7px;border-bottom:1px solid var(--line);border-right:1px solid #e8edf2;text-align:center;white-space:nowrap}
-th{background:#edf3f0;position:sticky;top:0;z-index:1}
-td.left,th.left{text-align:left}.money{text-align:right;font-variant-numeric:tabular-nums}
-.booktable{min-width:1450px}.booktable th:first-child,.booktable td:first-child{position:sticky;left:0;background:#fff;z-index:2}
-.booktable th:first-child{background:#edf3f0;z-index:3}
-.actions{display:flex;gap:8px;flex-wrap:wrap;align-items:end}
-.actions>div{min-width:180px;flex:1}
-.note{background:#fff8df;border:1px solid #f0df9e;padding:11px;border-radius:8px;font-size:13px}
-.pill{display:inline-block;background:#e6f4ed;color:#14543d;padding:4px 8px;border-radius:20px;font-size:12px}
-@media(max-width:650px){header{padding:15px}.container{padding:0 8px}.card{padding:13px}button{padding:10px}}
+*{box-sizing:border-box}body{margin:0;background:#f1f4f2;color:#17231f;font-family:Arial,sans-serif}
+header{background:#123b32;color:white;padding:18px 16px;text-align:center}header h2{margin:0;font-size:22px}
+main{max-width:1500px;margin:18px auto;padding:0 12px}
+.card{background:white;border-radius:10px;padding:15px;margin-bottom:14px;box-shadow:0 2px 8px #0001}
+input,select,button{font:inherit;padding:10px;border:1px solid #cbd5d1;border-radius:6px}
+input,select{max-width:100%}button{background:#146c50;color:white;border:0;cursor:pointer;font-weight:bold}
+button:disabled{opacity:.5}label{font-size:13px;font-weight:bold;display:block;margin:7px 0 4px}
+.hidden{display:none!important}.muted{color:#66736d;font-size:13px}.error{color:#b42318}.success{color:#087443}
+#login{max-width:430px;margin:50px auto}#login input{width:100%;margin-bottom:10px}
+.menu{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
+.menu button{padding:16px 8px;font-size:17px;background:#31594e}
+.menu button.active{background:#0d3e30;outline:3px solid #a8c9b8}
+.tablewrap{overflow:auto;background:white;border:1px solid #718078;border-radius:3px;max-height:72vh;overscroll-behavior:contain}
+table{border-collapse:collapse;min-width:1900px;width:max-content;font-size:12px;background:#fff}
+th,td{border:1px solid #89958f;padding:8px 7px;text-align:center;white-space:nowrap;height:36px}
+th{background:#e2e8e4;position:sticky;top:0;z-index:3;font-weight:700}
+td.name,th.name{text-align:left;min-width:145px}
+td.fixedcol{background:#fff;position:sticky;z-index:1}th.fixedcol{position:sticky;z-index:4;background:#e2e8e4}
+td.money{text-align:right}
+.booktitle{text-align:center;margin:4px 0 12px}
+.formrow{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:8px;align-items:end}
+.formrow input,.formrow select{width:100%}
+.small{font-size:12px;padding:7px}
+.cellbtn{padding:4px 6px;font-size:11px;background:#e9f2ed;color:#174b38;border:1px solid #b8cbbf}
+@media(max-width:600px){header h2{font-size:18px}.menu button{font-size:14px;padding:13px 4px}main{padding:0 7px}.card{padding:10px}}
 </style>
 </head>
 <body>
-<header><h2>BUKU ANGSURAN KMJ JAYA</h2><div>Sistem Administrasi dan Pembayaran Angsuran</div></header>
-<div class="container">
+<header><h2>BUKU ANGSURAN KMJ JAYA</h2></header>
+<main>
 <section id="login" class="card">
-<h2>Login Admin</h2>
-<div class="formgrid">
-<div><label>Email</label><input id="email" type="email" placeholder="Email admin"></div>
-<div><label>Password</label><input id="password" type="password" placeholder="Password"></div>
-</div>
-<p><button onclick="loginAdmin()">Masuk</button></p><p id="pesanLogin"></p>
+<h3 style="text-align:center">LOGIN ADMIN</h3>
+<label>Email</label><input id="email" type="email" placeholder="Email admin">
+<label>Password</label><input id="password" type="password" placeholder="Password">
+<button style="width:100%" onclick="loginAdmin()">MASUK</button>
+<p id="loginMsg"></p>
 </section>
+
 <section id="app" class="hidden">
-<div class="card actions"><div><strong id="namaAdmin">Administrator</strong><div class="muted">Administrasi KMJ Jaya</div></div><div style="flex:0 0 auto"><button class="secondary" onclick="logout()">Keluar</button></div></div>
-<div class="card actions">
-<div><label>Periode buku aktif/dilihat</label><select id="periodePilih" onchange="gantiPeriode()"></select></div>
-<div style="flex:0 0 auto"><button class="secondary" onclick="muatSemua()">Muat ulang</button></div>
+<div class="card" style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+<div><b id="adminEmail"></b><div class="muted" id="periodeInfo"></div></div>
+<button class="small" style="background:#64736c" onclick="logout()">Keluar</button>
 </div>
-<nav>
-<button onclick="tampil('dashboard')">Dashboard</button>
-<button onclick="tampil('anggota')">Data Anggota</button>
-<button onclick="tampil('periode')">Periode Buku</button>
-<button onclick="tampil('buku1')">Buku I</button>
-<button onclick="tampil('buku2')">Buku II</button>
-<button onclick="tampil('pinjaman')">Tambah Pinjaman</button>
-<button onclick="tampil('pembayaran')">Pembayaran</button>
-<button onclick="tampil('tutup')">Tutup Periode</button>
+<nav class="menu">
+<button id="btn-buku1" onclick="showBook('buku1')">BUKU 1</button>
+<button id="btn-buku2" onclick="showBook('buku2')">BUKU 2</button>
+<button id="btn-storting" onclick="showBook('storting')">BUKU STORTING</button>
 </nav>
 
-<div id="dashboard" class="page">
-<h2>Dashboard</h2><div class="grid">
-<div class="stat">Jumlah Anggota<strong id="jAnggota">0</strong></div>
-<div class="stat">Jumlah Pinjaman<strong id="jPinjaman">0</strong></div>
-<div class="stat">Transaksi Pembayaran<strong id="jBayar">0</strong></div>
-<div class="stat">Total Sisa Saldo<strong id="totalSisa">Rp0</strong></div>
-</div><div class="card" style="margin-top:15px"><h3>Ringkasan periode</h3><div id="ringkasan" class="muted">Pilih periode untuk melihat ringkasan.</div></div>
+<section id="buku1" class="book hidden">
+<div class="card">
+<h3 class="booktitle">BUKU I</h3>
+<div class="muted">Tabel bergaris seperti buku manual. Geser ke kanan/kiri dan ke atas/bawah untuk melihat seluruh halaman.</div>
+<p><button class="small" onclick="document.getElementById('formPinjaman').classList.toggle('hidden')">+ Tambah pinjaman</button></p>
+<div id="formPinjaman" class="hidden">
+<div class="formrow">
+<div><label>No. Anggota</label><select id="loanMember"></select></div>
+<div><label>No. Pinjaman</label><input id="loanNo" placeholder="Nomor pinjaman"></div>
+<div><label>Tanggal drop</label><input id="loanDate" type="date"></div>
+<div><label>Besar pinjaman (Rp)</label><input id="loanAmount" type="number" min="1"></div>
+<div><label>Jasa (Rp)</label><input id="loanFee" type="number" min="0" value="0"></div>
+<div><label>Total kewajiban (Rp)</label><input id="loanTotal" type="number" min="1"></div>
+<div><button onclick="saveLoan()">Simpan pinjaman</button></div>
 </div>
-
-<div id="anggota" class="page hidden">
-<div class="card"><h2>Tambah Anggota</h2><div class="formgrid">
-<div><label>Nomor anggota *</label><input id="noAnggota"></div><div><label>Nama anggota *</label><input id="namaAnggota"></div>
-<div><label>Alamat</label><input id="alamat"></div><div><label>Nomor WhatsApp</label><input id="wa"></div>
-</div><p><button onclick="tambahAnggota()">Simpan Anggota</button></p><p id="pesanAnggota"></p></div>
-<div class="card"><h3>Daftar Anggota</h3><div class="tablewrap"><table><thead><tr><th>No. Anggota</th><th>Nama</th><th>Alamat</th><th>WhatsApp</th><th>Status</th></tr></thead><tbody id="daftarAnggota"></tbody></table></div></div>
+<p id="loanMsg"></p>
 </div>
-
-<div id="periode" class="page hidden">
-<div class="card"><h2>Buat Periode Buku</h2><div class="formgrid">
-<div><label>Nama periode *</label><input id="namaPeriode" placeholder="Contoh: November 2026"></div>
-<div><label>Tanggal mulai *</label><input id="mulaiPeriode" type="date"></div><div><label>Tanggal selesai *</label><input id="selesaiPeriode" type="date"></div>
-</div><p><button onclick="buatPeriode()">Simpan Periode</button></p><p id="pesanPeriode"></p></div>
-<div class="card"><h3>Daftar Periode</h3><div class="tablewrap"><table><thead><tr><th>Nama</th><th>Mulai</th><th>Selesai</th><th>Status</th></tr></thead><tbody id="daftarPeriode"></tbody></table></div></div>
 </div>
+<div class="tablewrap" id="book1Table"></div>
+</section>
 
-<div id="pinjaman" class="page hidden">
-<div class="card"><h2>Catat Pinjaman Baru — Buku I</h2>
-<div class="note">Pinjaman baru masuk Buku I. Isian jasa dan total kewajiban mengikuti ketentuan yang berlaku di KMJ Jaya; sistem tidak membagi pinjaman 50:50.</div>
-<div class="formgrid">
-<div><label>Anggota *</label><select id="anggotaPinjaman"><option value="">Pilih anggota</option></select></div>
-<div><label>Nomor pinjaman *</label><input id="noPinjaman" placeholder="Nomor pinjaman"></div>
-<div><label>Tanggal drop *</label><input id="tanggalDrop" type="date"></div>
-<div><label>Besar pinjaman (Rp) *</label><input id="besarPinjaman" type="number" min="1"></div>
-<div><label>Jasa (Rp)</label><input id="jasaPinjaman" type="number" min="0" value="0"></div>
-<div><label>Total kewajiban (Rp) *</label><input id="totalKewajiban" type="number" min="1"></div>
-</div><p><button onclick="simpanPinjaman()">Simpan Pinjaman ke Buku I</button></p><p id="pesanPinjaman"></p></div>
-</div>
-
-<div id="buku1" class="page hidden"><div class="card"><h2>BUKU I — PINJAMAN BARU</h2><div class="muted">Kolom pembayaran harian mengikuti tanggal 1 sampai 31.</div><div id="tabelBuku1" class="tablewrap" style="margin-top:12px"></div></div></div>
-<div id="buku2" class="page hidden"><div class="card"><h2>BUKU II — SALDO PINJAMAN LANJUTAN</h2><div class="muted">Saldo awal adalah sisa kewajiban yang dibawa dari periode sebelumnya.</div><div id="tabelBuku2" class="tablewrap" style="margin-top:12px"></div></div></div>
-
-<div id="pembayaran" class="page hidden">
-<div class="card"><h2>Catat Pembayaran Angsuran</h2><div class="formgrid">
-<div><label>Buku *</label><select id="bukuBayar" onchange="muatPilihanPinjaman()"><option value="buku1">Buku I</option><option value="buku2">Buku II</option></select></div>
-<div><label>Nasabah / pinjaman *</label><select id="barisPinjaman"><option value="">Pilih pinjaman</option></select></div>
-<div><label>Tanggal bayar *</label><input id="tanggalBayar" type="date"></div>
-<div><label>Jumlah bayar (Rp) *</label><input id="jumlahBayar" type="number" min="1"></div>
-</div><p><button onclick="simpanPembayaran()">Simpan Pembayaran</button></p><p id="pesanBayar"></p></div>
-<div class="card"><h3>Riwayat pembayaran periode ini</h3><div id="riwayatBayar" class="tablewrap"></div></div>
-</div>
-
-<div id="tutup" class="page hidden">
-<div class="card"><h2>Pindahkan Saldo ke Buku II Periode Berikutnya</h2>
-<div class="note">Fungsi ini menyalin pinjaman yang masih memiliki sisa saldo ke periode tujuan sebagai Buku II. Saldo awal menggunakan sisa saldo terkini. Riwayat transaksi lama tidak dihapus. Pinjaman yang sama tidak akan dimasukkan dua kali ke periode tujuan.</div>
-<div class="formgrid"><div><label>Periode sumber</label><select id="periodeSumber"></select></div><div><label>Periode tujuan *</label><select id="periodeTujuan"></select></div></div>
-<p><button onclick="pindahkanSaldo()">Pindahkan saldo belum lunas</button></p><p id="pesanTutup"></p></div>
+<section id="buku2" class="book hidden">
+<div class="card"><h3 class="booktitle">BUKU II</h3>
+<div class="muted">Tabel bergaris seperti buku manual. Geser ke kanan/kiri dan ke atas/bawah untuk melihat seluruh halaman.</div></div>
+<div class="tablewrap" id="book2Table"></div>
+<div class="card">
+<button onclick="carryForward()">Bawa saldo belum lunas ke periode bulan ini</button>
+<p id="carryMsg" class="muted">Gunakan setelah periode baru dibuat. Pinjaman yang sudah tercatat di periode ini tidak akan diduplikasi.</p>
 </div>
 </section>
-</div>
+
+<section id="storting" class="book hidden">
+<div class="card"><h3 class="booktitle">BUKU STORTING</h3>
+<div class="muted">Rekap jumlah pembayaran Buku II, Buku I, dan total storting untuk setiap tanggal.</div></div>
+<div class="tablewrap" id="stortingTable"></div>
+</section>
+</section>
+</main>
 
 <script>
 const SUPABASE_URL="https://zatgfcifvpyclemyknxv.supabase.co";
 const SUPABASE_KEY="sb_publishable_GWpranv3E5EzGh4UJB0NkQ_AEmD2kOH";
 const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-let periodeAktif=null, anggotaCache=[], periodeCache=[], barisCache={buku1:[],buku2:[]};
-const el=id=>document.getElementById(id);
-const rupiah=n=>"Rp"+Number(n||0).toLocaleString("id-ID");
-const tanggalHariIni=()=>new Date().toISOString().slice(0,10);
-function pesan(id,teks,jenis=""){el(id).textContent=teks;el(id).className=jenis}
+let activePeriod=null, members=[], currentLoans={buku1:[],buku2:[]};
+const $=id=>document.getElementById(id);
+const money=n=>"Rp"+Number(n||0).toLocaleString("id-ID");
+const esc=v=>{let s=document.createElement("span");s.textContent=v??"-";return s.innerHTML};
+const msg=(id,t,c="")=>{$(id).textContent=t;$(id).className=c};
+const today=()=>{let d=new Date(),z=d.getTimezoneOffset();return new Date(d.getTime()-z*60000).toISOString().slice(0,10)};
+function monthName(d){return ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"][d.getMonth()]}
 async function loginAdmin(){
- const email=el("email").value.trim(),password=el("password").value;
- pesan("pesanLogin","Memeriksa akun...");
- const {data,error}=await db.auth.signInWithPassword({email,password});
- if(error){pesan("pesanLogin","Login gagal: "+error.message,"error");return}
- const {data:profil,error:pe}=await db.from("profiles").select("role").eq("id",data.user.id).maybeSingle();
- if(pe||!profil||profil.role!=="admin"){await db.auth.signOut();pesan("pesanLogin","Akun ini tidak memiliki hak admin.","error");return}
- bukaAplikasi(data.user.email);
+ msg("loginMsg","Memeriksa akun...");
+ const {data,error}=await db.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});
+ if(error){msg("loginMsg","Login gagal: "+error.message,"error");return}
+ const {data:p,error:pe}=await db.from("profiles").select("role").eq("id",data.user.id).maybeSingle();
+ if(pe||p?.role!=="admin"){await db.auth.signOut();msg("loginMsg","Akun ini tidak memiliki akses admin.","error");return}
+ $("login").classList.add("hidden");$("app").classList.remove("hidden");$("adminEmail").textContent=data.user.email;
+ await initializeBooks();showBook("buku1");
 }
 async function logout(){await db.auth.signOut();location.reload()}
-function bukaAplikasi(email){el("login").classList.add("hidden");el("app").classList.remove("hidden");el("namaAdmin").textContent=email;muatSemua()}
-function tampil(id){document.querySelectorAll(".page").forEach(x=>x.classList.add("hidden"));el(id).classList.remove("hidden");
- if(id==="anggota")muatAnggota();if(id==="buku1")muatBuku("buku1");if(id==="buku2")muatBuku("buku2");if(id==="pembayaran"){muatPilihanPinjaman();muatRiwayat()}}
-async function muatSemua(){await Promise.all([muatAnggotaCache(),muatPeriode()]);await muatDashboard();await muatPilihanPinjaman()}
-async function muatAnggotaCache(){const {data,error}=await db.from("anggota").select("id,no_anggota,nama,alamat,no_wa,aktif").order("id");
- if(error){console.error(error);return}anggotaCache=data||[];el("anggotaPinjaman").innerHTML='<option value="">Pilih anggota</option>'+anggotaCache.filter(a=>a.aktif).map(a=>`<option value="${a.id}">${aman(a.no_anggota)} — ${aman(a.nama)}</option>`).join("");
-}
-async function muatAnggota(){await muatAnggotaCache();el("daftarAnggota").innerHTML=anggotaCache.map(a=>`<tr><td>${aman(a.no_anggota)}</td><td class="left">${aman(a.nama)}</td><td class="left">${aman(a.alamat)}</td><td>${aman(a.no_wa)}</td><td>${a.aktif?"Aktif":"Tidak aktif"}</td></tr>`).join("")}
-function aman(v){const x=document.createElement("span");x.textContent=v??"-";return x.innerHTML}
-async function tambahAnggota(){const no=el("noAnggota").value.trim(),nama=el("namaAnggota").value.trim();if(!no||!nama){pesan("pesanAnggota","Nomor anggota dan nama wajib diisi.","error");return}
- const {error}=await db.from("anggota").insert({no_anggota:no,nama,alamat:el("alamat").value.trim()||null,no_wa:el("wa").value.trim()||null,aktif:true});
- if(error){pesan("pesanAnggota","Gagal: "+error.message,"error");return}pesan("pesanAnggota","Anggota berhasil disimpan.","success");["noAnggota","namaAnggota","alamat","wa"].forEach(x=>el(x).value="");await muatAnggota()}
-async function muatPeriode(){const {data,error}=await db.from("periode_buku").select("*").order("tanggal_mulai",{ascending:false});
- if(error){console.error(error);return}periodeCache=data||[];
- const opts=periodeCache.map(p=>`<option value="${p.id}">${aman(p.nama_periode)} (${p.status})</option>`).join("");
- el("periodePilih").innerHTML=opts||'<option value="">Belum ada periode</option>';
- el("periodeSumber").innerHTML=opts;el("periodeTujuan").innerHTML=opts;
- if(periodeAktif&&periodeCache.some(p=>String(p.id)===String(periodeAktif)))el("periodePilih").value=periodeAktif;
- else if(periodeCache.length){periodeAktif=periodeCache[0].id;el("periodePilih").value=periodeAktif}
- if(periodeAktif){el("periodeSumber").value=periodeAktif}
- el("daftarPeriode").innerHTML=periodeCache.map(p=>`<tr><td>${aman(p.nama_periode)}</td><td>${p.tanggal_mulai}</td><td>${p.tanggal_selesai}</td><td>${aman(p.status)}</td></tr>`).join("");
-}
-async function gantiPeriode(){periodeAktif=el("periodePilih").value||null;await muatDashboard();await muatPilihanPinjaman()}
-async function buatPeriode(){const nama=el("namaPeriode").value.trim(),mulai=el("mulaiPeriode").value,selesai=el("selesaiPeriode").value;
- if(!nama||!mulai||!selesai||selesai<mulai){pesan("pesanPeriode","Lengkapi nama dan tanggal periode dengan benar.","error");return}
- const {error}=await db.from("periode_buku").insert({nama_periode:nama,tanggal_mulai:mulai,tanggal_selesai:selesai,status:"aktif"});
- if(error){pesan("pesanPeriode","Gagal: "+error.message,"error");return}pesan("pesanPeriode","Periode berhasil dibuat.","success");el("namaPeriode").value="";await muatPeriode();await muatDashboard()}
-async function muatDashboard(){const [a,p,b,s]=await Promise.all([
- db.from("anggota").select("id",{count:"exact",head:true}),db.from("pinjaman").select("id",{count:"exact",head:true}),
- db.from("transaksi_bayar").select("id",{count:"exact",head:true}),db.from("pinjaman").select("sisa_saldo")]);
- el("jAnggota").textContent=a.count??"-";el("jPinjaman").textContent=p.count??"-";el("jBayar").textContent=b.count??"-";
- el("totalSisa").textContent=rupiah((s.data||[]).reduce((n,x)=>n+Number(x.sisa_saldo||0),0));
- if(!periodeAktif){el("ringkasan").textContent="Belum ada periode buku. Buat periode terlebih dahulu.";return}
- const {data}=await db.from("periode_pinjaman").select("id,jenis_buku,saldo_awal").eq("periode_id",periodeAktif);
- const rows=data||[];el("ringkasan").textContent=`Buku I: ${rows.filter(x=>x.jenis_buku==="buku1").length} pinjaman · Buku II: ${rows.filter(x=>x.jenis_buku==="buku2").length} pinjaman.`;
-}
-async function simpanPinjaman(){if(!periodeAktif){pesan("pesanPinjaman","Buat dan pilih periode buku terlebih dahulu.","error");return}
- const anggota_id=el("anggotaPinjaman").value,no_pinjaman=el("noPinjaman").value.trim(),tanggal_drop=el("tanggalDrop").value;
- const besar=Number(el("besarPinjaman").value),jasa=Number(el("jasaPinjaman").value||0),total=Number(el("totalKewajiban").value);
- if(!anggota_id||!no_pinjaman||!tanggal_drop||besar<=0||total<=0||jasa<0){pesan("pesanPinjaman","Lengkapi semua data wajib dengan angka yang benar.","error");return}
- const {data:loan,error}=await db.from("pinjaman").insert({anggota_id,no_pinjaman,tanggal_drop,besar_pinjaman:besar,jasa,total_kewajiban:total,sisa_saldo:total,status:"aktif"}).select("id").single();
- if(error){pesan("pesanPinjaman","Gagal menyimpan pinjaman: "+error.message,"error");return}
- const {error:pe}=await db.from("periode_pinjaman").insert({periode_id:periodeAktif,pinjaman_id:loan.id,jenis_buku:"buku1",saldo_awal:total});
- if(pe){pesan("pesanPinjaman","Pinjaman tersimpan, tetapi gagal masuk Buku I: "+pe.message,"error");return}
- pesan("pesanPinjaman","Pinjaman berhasil dicatat di Buku I.","success");["noPinjaman","tanggalDrop","besarPinjaman","jasaPinjaman","totalKewajiban"].forEach(x=>el(x).value="");el("jasaPinjaman").value="0";await muatDashboard()
-}
-async function ambilBarisBuku(jenis){if(!periodeAktif)return [];
- const {data,error}=await db.from("periode_pinjaman").select("id,periode_id,pinjaman_id,jenis_buku,saldo_awal,pinjaman(id,no_pinjaman,tanggal_drop,besar_pinjaman,jasa,total_kewajiban,sisa_saldo,status,anggota_id,anggota(no_anggota,nama,alamat))").eq("periode_id",periodeAktif).eq("jenis_buku",jenis).order("id");
- if(error){console.error(error);return []}const rows=data||[];if(!rows.length)return [];
- const ids=rows.map(x=>x.id);const {data:pay}=await db.from("transaksi_bayar").select("periode_pinjaman_id,tanggal_bayar,jumlah_bayar").in("periode_pinjaman_id",ids);
- return rows.map(r=>({...r,pembayaran:(pay||[]).filter(x=>String(x.periode_pinjaman_id)===String(r.id))}));
-}
-async function muatBuku(jenis){const target=jenis==="buku1"?"tabelBuku1":"tabelBuku2";if(!periodeAktif){el(target).innerHTML="Buat periode buku terlebih dahulu.";return}
- const rows=await ambilBarisBuku(jenis);barisCache[jenis]=rows;
- let html='<table class="booktable"><thead><tr><th class="left">No / Nasabah</th><th>Tgl drop</th><th>Besar pinjaman</th><th>Saldo awal</th>';
- for(let d=1;d<=31;d++)html+=`<th>${d}</th>`;html+='<th>Total bayar</th><th>Sisa saldo</th></tr></thead><tbody>';
- const harian=Array(31).fill(0);let totalBayar=0;
- rows.forEach(r=>{const p=r.pinjaman||{},a=p.anggota||{};const perHari=Array(31).fill(0);(r.pembayaran||[]).forEach(t=>{const d=Number(String(t.tanggal_bayar).slice(8,10));if(d>=1&&d<=31)perHari[d-1]+=Number(t.jumlah_bayar||0)});
- const jumlah=perHari.reduce((x,y)=>x+y,0);totalBayar+=jumlah;perHari.forEach((v,i)=>harian[i]+=v);
- html+=`<tr><td class="left">${aman(a.no_anggota)} · ${aman(a.nama)}<br><span class="muted">${aman(p.no_pinjaman)}</span></td><td>${aman(p.tanggal_drop)}</td><td class="money">${rupiah(p.besar_pinjaman)}</td><td class="money">${rupiah(r.saldo_awal)}</td>`;
- perHari.forEach(v=>html+=`<td>${v?rupiah(v):""}</td>`);html+=`<td class="money">${rupiah(jumlah)}</td><td class="money">${rupiah(p.sisa_saldo)}</td></tr>`});
- html+='<tr><th colspan="4">TOTAL PEMBAYARAN HARIAN</th>';harian.forEach(v=>html+=`<th>${v?rupiah(v):""}</th>`);html+=`<th>${rupiah(totalBayar)}</th><th></th></tr></tbody></table>`;
- el(target).innerHTML=rows.length?html:"Belum ada pinjaman pada buku ini untuk periode yang dipilih.";
-}
-async function muatPilihanPinjaman(){const jenis=el("bukuBayar").value;const rows=await ambilBarisBuku(jenis);barisCache[jenis]=rows;
- el("barisPinjaman").innerHTML='<option value="">Pilih pinjaman</option>'+rows.filter(r=>Number(r.pinjaman?.sisa_saldo||0)>0).map(r=>`<option value="${r.id}">${aman(r.pinjaman?.no_pinjaman)} — ${aman(r.pinjaman?.anggota?.nama)} · sisa ${rupiah(r.pinjaman?.sisa_saldo)}</option>`).join("")}
-async function simpanPembayaran(){const id=el("barisPinjaman").value,tanggal=el("tanggalBayar").value,jumlah=Number(el("jumlahBayar").value);
- if(!id||!tanggal||jumlah<=0){pesan("pesanBayar","Pilih pinjaman, tanggal, dan jumlah pembayaran yang benar.","error");return}
- const row=barisCache[el("bukuBayar").value].find(x=>String(x.id)===String(id));if(row&&jumlah>Number(row.pinjaman?.sisa_saldo||0)){pesan("pesanBayar","Jumlah pembayaran melebihi sisa saldo pinjaman.","error");return}
- const {error}=await db.from("transaksi_bayar").insert({periode_pinjaman_id:id,tanggal_bayar:tanggal,jumlah_bayar:jumlah});
- if(error){pesan("pesanBayar","Gagal menyimpan: "+error.message,"error");return}
- pesan("pesanBayar","Pembayaran berhasil disimpan.","success");el("jumlahBayar").value="";await muatPilihanPinjaman();await muatRiwayat();await muatDashboard()}
-async function muatRiwayat(){if(!periodeAktif){el("riwayatBayar").innerHTML="Pilih periode.";return}
- const {data:pp}=await db.from("periode_pinjaman").select("id,jenis_buku,pinjaman(no_pinjaman,anggota(nama))").eq("periode_id",periodeAktif);
- const ids=(pp||[]).map(x=>x.id);if(!ids.length){el("riwayatBayar").innerHTML="Belum ada pembayaran.";return}
- const {data,error}=await db.from("transaksi_bayar").select("*").in("periode_pinjaman_id",ids).order("tanggal_bayar");
- if(error){el("riwayatBayar").textContent=error.message;return}
- const rows=data||[];el("riwayatBayar").innerHTML='<table><thead><tr><th>Tanggal</th><th>Buku</th><th>Nomor pinjaman</th><th>Nasabah</th><th>Jumlah</th></tr></thead><tbody>'+rows.map(t=>{const r=pp.find(x=>String(x.id)===String(t.periode_pinjaman_id));return `<tr><td>${t.tanggal_bayar}</td><td>${r?.jenis_buku==="buku1"?"Buku I":"Buku II"}</td><td>${aman(r?.pinjaman?.no_pinjaman)}</td><td>${aman(r?.pinjaman?.anggota?.nama)}</td><td class="money">${rupiah(t.jumlah_bayar)}</td></tr>`}).join("")+'</tbody></table>'}
-async function pindahkanSaldo(){const sumber=el("periodeSumber").value,tujuan=el("periodeTujuan").value;if(!sumber||!tujuan||String(sumber)===String(tujuan)){pesan("pesanTutup","Pilih dua periode yang berbeda.","error");return}
- if(!confirm("Pindahkan semua pinjaman yang masih memiliki saldo dari periode sumber ke Buku II periode tujuan?"))return;
- const {data:src,error}=await db.from("periode_pinjaman").select("id,pinjaman_id,jenis_buku,saldo_awal,pinjaman(id,sisa_saldo,status)").eq("periode_id",sumber);
- if(error){pesan("pesanTutup","Gagal membaca periode sumber: "+error.message,"error");return}
- let dipindah=0,lewat=0;
- for(const r of (src||[])){const sisa=Number(r.pinjaman?.sisa_saldo||0);if(sisa<=0){lewat++;continue}
-  const {data:ada,error:cek}=await db.from("periode_pinjaman").select("id").eq("periode_id",tujuan).eq("pinjaman_id",r.pinjaman_id).maybeSingle();
-  if(cek){pesan("pesanTutup","Gagal memeriksa data tujuan: "+cek.message,"error");return}
-  if(ada){lewat++;continue}
-  const {error:ins}=await db.from("periode_pinjaman").insert({periode_id:tujuan,pinjaman_id:r.pinjaman_id,jenis_buku:"buku2",saldo_awal:sisa});
-  if(ins){pesan("pesanTutup","Berhenti. Gagal memindahkan pinjaman "+r.pinjaman_id+": "+ins.message,"error");return}dipindah++;
+async function initializeBooks(){
+ const now=new Date(),first=new Date(now.getFullYear(),now.getMonth(),1),last=new Date(now.getFullYear(),now.getMonth()+1,0);
+ const start=todayISO(first),end=todayISO(last),name=monthName(now)+" "+now.getFullYear();
+ let {data,error}=await db.from("periode_buku").select("*").eq("tanggal_mulai",start).maybeSingle();
+ if(error){alert("Gagal membaca periode: "+error.message);return}
+ if(!data){
+  const ins=await db.from("periode_buku").insert({nama_periode:name,tanggal_mulai:start,tanggal_selesai:end,status:"aktif"}).select("*").single();
+  if(ins.error){alert("Gagal membuat periode otomatis: "+ins.error.message);return}data=ins.data;
  }
- pesan("pesanTutup",`Selesai. ${dipindah} pinjaman dibawa ke Buku II. ${lewat} pinjaman dilewati (lunas atau sudah ada di periode tujuan).`,"success");
+ activePeriod=data;$("periodeInfo").textContent="Periode: "+data.nama_periode;
+ await loadMembers();await loadBook("buku1");await loadBook("buku2");await loadStorting();
 }
-db.auth.getSession().then(async({data})=>{if(data.session){const {data:p}=await db.from("profiles").select("role").eq("id",data.session.user.id).maybeSingle();if(p?.role==="admin")bukaAplikasi(data.session.user.email);else await db.auth.signOut()}});
+function todayISO(d){let x=new Date(d.getTime()-d.getTimezoneOffset()*60000);return x.toISOString().slice(0,10)}
+async function loadMembers(){
+ const {data,error}=await db.from("anggota").select("id,no_anggota,nama,alamat,aktif").eq("aktif",true).order("id");
+ if(error){alert("Gagal memuat anggota: "+error.message);return}
+ members=data||[];$("loanMember").innerHTML='<option value="">Pilih anggota</option>'+members.map(m=>`<option value="${m.id}">${esc(m.no_anggota)} — ${esc(m.nama)}</option>`).join("");
+}
+function showBook(id){
+ document.querySelectorAll(".book").forEach(x=>x.classList.add("hidden"));
+ $(""+id).classList.remove("hidden");
+ document.querySelectorAll(".menu button").forEach(x=>x.classList.remove("active"));
+ $("btn-"+id).classList.add("active");
+ if(id==="buku1")loadBook("buku1");if(id==="buku2")loadBook("buku2");if(id==="storting")loadStorting();
+}
+async function getBookRows(kind){
+ if(!activePeriod)return [];
+ const {data,error}=await db.from("periode_pinjaman").select("id,periode_id,pinjaman_id,jenis_buku,saldo_awal").eq("periode_id",activePeriod.id).eq("jenis_buku",kind).order("id");
+ if(error){console.error(error);return []}
+ const pp=data||[];if(!pp.length)return [];
+ const loanIds=[...new Set(pp.map(x=>x.pinjaman_id))];
+ const [{data:loans,error:le},{data:payments,error:be},{data:mems}]=await Promise.all([
+  db.from("pinjaman").select("id,anggota_id,no_pinjaman,tanggal_drop,besar_pinjaman,jasa,total_kewajiban,sisa_saldo,status").in("id",loanIds),
+  db.from("transaksi_bayar").select("periode_pinjaman_id,tanggal_bayar,jumlah_bayar").in("periode_pinjaman_id",pp.map(x=>x.id)),
+  db.from("anggota").select("id,no_anggota,nama,alamat")
+ ]);
+ if(le||be){console.error(le||be);return []}
+ const loanMap=Object.fromEntries((loans||[]).map(x=>[x.id,x])),memMap=Object.fromEntries((mems||[]).map(x=>[x.id,x]));
+ return pp.map(r=>({...r,loan:loanMap[r.pinjaman_id]||{},member:memMap[loanMap[r.pinjaman_id]?.anggota_id]||{},payments:(payments||[]).filter(t=>String(t.periode_pinjaman_id)===String(r.id))}));
+}
+async function loadBook(kind){
+ const rows=await getBookRows(kind);currentLoans[kind]=rows;
+ const target=kind==="buku1"?"book1Table":"book2Table";
+ renderLedger(target,rows,kind);
+}
+function renderLedger(target,rows,kind){
+ let h='<table><thead><tr><th class="fixedcol">TGL DROP</th><th class="fixedcol">NO. ANGGOTA</th><th class="fixedcol name">NAMA NASABAH / ALAMAT</th><th>BESAR PINJAMAN</th><th>SALDO AWAL</th>';
+ for(let d=1;d<=31;d++)h+=`<th>${d}</th>`;
+ h+='<th>JUMLAH BAYAR</th><th>SISA SALDO</th></tr></thead><tbody>';
+ const daily=Array(31).fill(0);let sumPay=0;
+ rows.forEach(r=>{
+  const l=r.loan,m=r.member,day=Array(31).fill(0);
+  r.payments.forEach(p=>{let n=Number(String(p.tanggal_bayar).slice(8,10));if(n>=1&&n<=31)day[n-1]+=Number(p.jumlah_bayar||0)});
+  const total=day.reduce((a,b)=>a+b,0);sumPay+=total;day.forEach((v,i)=>daily[i]+=v);
+  h+=`<tr><td class="fixedcol">${esc(l.tanggal_drop)}</td><td class="fixedcol">${esc(m.no_anggota)}<br>${esc(l.no_pinjaman)}</td><td class="fixedcol name"><b>${esc(m.nama)}</b><br>${esc(m.alamat)}</td><td>${money(l.besar_pinjaman)}</td><td>${money(r.saldo_awal)}</td>`;
+  day.forEach((v,i)=>h+=`<td><button class="cellbtn" onclick="addPayment('${r.id}','${kind}','${activePeriod.id}',${i+1})">${v?money(v):"+"}</button></td>`);
+  h+=`<td>${money(total)}</td><td>${money(l.sisa_saldo)}</td></tr>`;
+ });
+ h+='<tr><th colspan="5">JUMLAH STORTING HARIAN</th>';daily.forEach(v=>h+=`<th>${v?money(v):""}</th>`);h+=`<th>${money(sumPay)}</th><th></th></tr></tbody></table>`;
+ $(target).innerHTML=rows.length?h:'<div class="card">Belum ada catatan pada buku ini.</div>';
+}
+async function saveLoan(){
+ if(!activePeriod){msg("loanMsg","Periode belum tersedia.","error");return}
+ const anggota_id=$("loanMember").value,no_pinjaman=$("loanNo").value.trim(),tanggal_drop=$("loanDate").value;
+ const besar_pinjaman=Number($("loanAmount").value),jasa=Number($("loanFee").value||0),total_kewajiban=Number($("loanTotal").value);
+ if(!anggota_id||!no_pinjaman||!tanggal_drop||besar_pinjaman<=0||total_kewajiban<=0||jasa<0){msg("loanMsg","Lengkapi data pinjaman dengan benar.","error");return}
+ const {data,error}=await db.from("pinjaman").insert({anggota_id,no_pinjaman,tanggal_drop,besar_pinjaman,jasa,total_kewajiban,sisa_saldo:total_kewajiban,status:"aktif"}).select("id").single();
+ if(error){msg("loanMsg","Gagal: "+error.message,"error");return}
+ const {error:pe}=await db.from("periode_pinjaman").insert({periode_id:activePeriod.id,pinjaman_id:data.id,jenis_buku:"buku1",saldo_awal:total_kewajiban});
+ if(pe){msg("loanMsg","Pinjaman dibuat tetapi gagal dicatat ke Buku I: "+pe.message,"error");return}
+ msg("loanMsg","Pinjaman berhasil masuk Buku I.","success");
+ ["loanNo","loanDate","loanAmount","loanTotal"].forEach(x=>$(x).value="");$("loanFee").value="0";await loadBook("buku1");
+}
+async function addPayment(ppid,kind,periodId,day){
+ const row=currentLoans[kind].find(x=>String(x.id)===String(ppid));if(!row)return;
+ const defaultDate=String(activePeriod.tanggal_mulai).slice(0,8)+String(day).padStart(2,"0");
+ const date=prompt("Tanggal pembayaran (YYYY-MM-DD):",defaultDate);if(date===null)return;
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(date)){alert("Format tanggal harus YYYY-MM-DD.");return}
+ const amount=Number(prompt("Jumlah pembayaran (Rp):",""));if(!Number.isFinite(amount)||amount<=0){alert("Jumlah pembayaran tidak valid.");return}
+ if(amount>Number(row.loan.sisa_saldo||0)){alert("Pembayaran melebihi sisa saldo pinjaman.");return}
+ const {error}=await db.from("transaksi_bayar").insert({periode_pinjaman_id:ppid,tanggal_bayar:date,jumlah_bayar:amount});
+ if(error){alert("Gagal menyimpan pembayaran: "+error.message);return}
+ await loadBook(kind);await loadStorting();
+}
+async function carryForward(){
+ if(!activePeriod){msg("carryMsg","Periode tidak tersedia.","error");return}
+ const nextStart=new Date(activePeriod.tanggal_selesai+"T00:00:00");nextStart.setDate(nextStart.getDate()+1);
+ const nextEnd=new Date(nextStart.getFullYear(),nextStart.getMonth()+1,0);
+ const start=todayISO(nextStart),end=todayISO(nextEnd),name=monthName(nextStart)+" "+nextStart.getFullYear();
+ let {data:dest,error}=await db.from("periode_buku").select("*").eq("tanggal_mulai",start).maybeSingle();
+ if(error){msg("carryMsg","Gagal membaca periode berikutnya: "+error.message,"error");return}
+ if(!dest){const ins=await db.from("periode_buku").insert({nama_periode:name,tanggal_mulai:start,tanggal_selesai:end,status:"aktif"}).select("*").single();if(ins.error){msg("carryMsg","Gagal membuat periode berikutnya: "+ins.error.message,"error");return}dest=ins.data}
+ const {data:src,error:se}=await db.from("periode_pinjaman").select("pinjaman_id").eq("periode_id",activePeriod.id);
+ if(se){msg("carryMsg","Gagal membaca pinjaman: "+se.message,"error");return}
+ let moved=0,skip=0;
+ for(const item of (src||[])){
+  const {data:loan,error:le}=await db.from("pinjaman").select("sisa_saldo").eq("id",item.pinjaman_id).single();
+  if(le){msg("carryMsg","Gagal membaca saldo pinjaman: "+le.message,"error");return}
+  const balance=Number(loan.sisa_saldo||0);if(balance<=0){skip++;continue}
+  const {data:exists,error:ee}=await db.from("periode_pinjaman").select("id").eq("periode_id",dest.id).eq("pinjaman_id",item.pinjaman_id).maybeSingle();
+  if(ee){msg("carryMsg","Gagal memeriksa periode tujuan: "+ee.message,"error");return}
+  if(exists){skip++;continue}
+  const {error:ie}=await db.from("periode_pinjaman").insert({periode_id:dest.id,pinjaman_id:item.pinjaman_id,jenis_buku:"buku2",saldo_awal:balance});
+  if(ie){msg("carryMsg","Gagal memindahkan saldo: "+ie.message,"error");return}moved++;
+ }
+ msg("carryMsg",`${moved} pinjaman dibawa ke Buku II periode ${name}. ${skip} dilewati karena lunas atau sudah tercatat.`,"success");
+}
+async function loadStorting(){
+ if(!activePeriod)return;
+ const {data:pp,error:pe}=await db.from("periode_pinjaman").select("id,jenis_buku").eq("periode_id",activePeriod.id);
+ if(pe){$("stortingTable").textContent=pe.message;return}
+ const ids=(pp||[]).map(x=>x.id);if(!ids.length){$("stortingTable").innerHTML='<div class="card">Belum ada pembayaran pada periode ini.</div>';return}
+ const {data:payments,error}=await db.from("transaksi_bayar").select("periode_pinjaman_id,tanggal_bayar,jumlah_bayar").in("periode_pinjaman_id",ids);
+ if(error){$("stortingTable").textContent=error.message;return}
+ const sums={};
+ (payments||[]).forEach(p=>{const r=pp.find(x=>String(x.id)===String(p.periode_pinjaman_id));const d=p.tanggal_bayar;if(!sums[d])sums[d]={buku1:0,buku2:0};sums[d][r.jenis_buku]+=Number(p.jumlah_bayar||0)});
+ let h='<table style="min-width:650px"><thead><tr><th>TANGGAL</th><th>BUKU II</th><th>BUKU I</th><th>JUMLAH STORTING</th><th>GLOBAL STORTING</th></tr></thead><tbody>';
+ let global=0;Object.keys(sums).sort().forEach(d=>{let x=sums[d],total=x.buku1+x.buku2;global+=total;h+=`<tr><td>${d}</td><td>${money(x.buku2)}</td><td>${money(x.buku1)}</td><td>${money(total)}</td><td>${money(global)}</td></tr>`});
+ h+=`<tr><th>TOTAL</th><th>${money(Object.values(sums).reduce((a,x)=>a+x.buku2,0))}</th><th>${money(Object.values(sums).reduce((a,x)=>a+x.buku1,0))}</th><th>${money(global)}</th><th></th></tr></tbody></table>`;
+ $("stortingTable").innerHTML=h;
+}
+db.auth.getSession().then(async({data})=>{if(data.session){const {data:p}=await db.from("profiles").select("role").eq("id",data.session.user.id).maybeSingle();if(p?.role==="admin"){$("login").classList.add("hidden");$("app").classList.remove("hidden");$("adminEmail").textContent=data.session.user.email;await initializeBooks();showBook("buku1")}else await db.auth.signOut()}});
 </script>
 </body>
 </html>
