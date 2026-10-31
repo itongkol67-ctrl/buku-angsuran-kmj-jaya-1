@@ -19,14 +19,27 @@ button:disabled{opacity:.5}label{font-size:13px;font-weight:bold;display:block;m
 .menu button{padding:16px 8px;font-size:17px;background:#31594e}
 .menu button.active{background:#0d3e30;outline:3px solid #a8c9b8}
 .tablewrap{overflow:auto;background:white;border:1px solid #718078;border-radius:3px;max-height:72vh;overscroll-behavior:contain}
-table{border-collapse:collapse;min-width:1900px;width:max-content;font-size:12px;background:#fff}
-th,td{border:1px solid #89958f;padding:8px 7px;text-align:center;white-space:nowrap;height:42px}
-th{background:#e2e8e4;position:sticky;top:0;z-index:3;font-weight:700}
-td.name,th.name{text-align:left;min-width:145px}
-td.fixedcol{background:#fff;position:sticky;z-index:1}th.fixedcol{position:sticky;z-index:4;background:#e2e8e4}
+table{border-collapse:collapse;width:max-content;min-width:100%;font-size:12px;background:#fff;table-layout:fixed}
+th,td{border:1px solid #89958f;padding:6px 4px;text-align:center;white-space:nowrap;height:40px}
+th{background:#e2e8e4;position:sticky;top:0;z-index:3;font-weight:700;text-align:center}
+th.col-date,td.col-date{width:92px;min-width:92px}
+th.col-na,td.col-na{width:52px;min-width:52px}
+th.col-np,td.col-np{width:52px;min-width:52px}
+th.col-name,td.col-name{width:145px;min-width:145px}
+th.col-address,td.col-address{width:145px;min-width:145px}
+th.col-amount,td.col-amount{width:105px;min-width:105px}
+th.col-balance,td.col-balance{width:105px;min-width:105px}
+th.col-payment,td.col-payment{width:76px;min-width:76px}
+th.col-total,td.col-total{width:105px;min-width:105px}
+th.col-action,td.col-action{width:78px;min-width:78px}
+td.name{text-align:left}
 td.money{text-align:right}
-.cellinput{width:100%;min-width:72px;padding:7px 5px;border:0;border-radius:0;background:transparent;text-align:center;font-size:12px}
+.cellinput{width:100%;min-width:0;padding:5px 2px;border:0;border-radius:0;background:transparent;text-align:center;font-size:12px}
+.cellinput.nameinput{text-align:left}
 .cellinput:focus{outline:2px solid #146c50;background:#f1fff7}
+.book-tools{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.book-tools button{font-size:13px;padding:10px 12px}
+.date-col-btn{padding:4px 3px;font-size:11px;background:#e9f2ed;color:#174b38;border:1px solid #b8cbbf;white-space:nowrap}
 .saveRow{font-size:11px;padding:7px 8px;white-space:nowrap}
 .booktitle{text-align:center;margin:4px 0 12px}
 .formrow{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:8px;align-items:end}
@@ -61,14 +74,21 @@ td.money{text-align:right}
 <section id="buku1" class="book hidden">
 <div class="card">
 <h3 class="booktitle">BUKU I</h3>
-<div class="muted">Isi langsung pada kotak baris kosong. Urutan kolom: TGL, NA, NP, Nama Nasabah, Alamat, Besar Pinjaman, Saldo Awal, lalu pembayaran tanggal 1–31. Tekan SIMPAN pada baris setelah data diisi.</div>
+<div class="muted">Isi data langsung pada baris yang ditambahkan. Gunakan tombol Tambah Kolom Hari Ini untuk mencatat pembayaran pada tanggal perangkat, dan Tambah Baris untuk menambah satu baris nasabah.</div>
+</div>
+<div class="book-tools">
+<button onclick="addTodayColumn('buku1')">+ Tambah Kolom Hari Ini</button>
+<button onclick="addBlankRow('buku1')">+ Tambah Baris</button>
 </div>
 <div class="tablewrap" id="book1Table"></div>
 </section>
 
 <section id="buku2" class="book hidden">
 <div class="card"><h3 class="booktitle">BUKU II</h3>
-<div class="muted">Tabel bergaris seperti buku manual. Geser ke kanan/kiri dan ke atas/bawah untuk melihat seluruh halaman.</div></div>
+<div class="muted">Kolom pembayaran ditambahkan sesuai tanggal saat Anda membutuhkannya. Tekan Tambah Kolom Hari Ini untuk membuat kolom tanggal perangkat.</div></div>
+<div class="book-tools">
+<button onclick="addTodayColumn('buku2')">+ Tambah Kolom Hari Ini</button>
+</div>
 <div class="tablewrap" id="book2Table"></div>
 <div class="card">
 <button onclick="carryForward()">Bawa saldo belum lunas ke periode bulan ini</button>
@@ -89,6 +109,9 @@ const SUPABASE_URL="https://zatgfcifvpyclemyknxv.supabase.co";
 const SUPABASE_KEY="sb_publishable_GWpranv3E5EzGh4UJB0NkQ_AEmD2kOH";
 const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 let activePeriod=null, currentLoans={buku1:[],buku2:[]};
+let dateColumns={buku1:[],buku2:[]};
+let blankRowCount={buku1:0,buku2:0};
+let draftRows={buku1:{}};
 const $=id=>document.getElementById(id);
 const money=n=>"Rp"+Number(n||0).toLocaleString("id-ID");
 const esc=v=>{let s=document.createElement("span");s.textContent=v??"-";return s.innerHTML};
@@ -145,39 +168,61 @@ async function loadBook(kind){
  const target=kind==="buku1"?"book1Table":"book2Table";
  renderLedger(target,rows,kind);
 }
+function setDraft(kind,n,field,value){
+ if(!draftRows[kind])draftRows[kind]={};
+ if(!draftRows[kind][n])draftRows[kind][n]={};
+ draftRows[kind][n][field]=value;
+}
+function addTodayColumn(kind){
+ const d=today();
+ if(!dateColumns[kind].includes(d))dateColumns[kind].push(d);
+ dateColumns[kind].sort();
+ renderLedger(kind==="buku1"?"book1Table":"book2Table",currentLoans[kind]||[],kind);
+}
+function addBlankRow(kind){
+ if(kind!=="buku1")return;
+ blankRowCount.buku1++;
+ renderLedger("book1Table",currentLoans.buku1||[],"buku1");
+}
 function renderLedger(target,rows,kind){
- let h='<table><thead><tr><th>TGL</th><th>NA</th><th>NP</th><th class="name">NAMA NASABAH</th><th class="name">ALAMAT</th><th>BESAR PINJAMAN</th><th>SALDO AWAL</th>';
- for(let d=1;d<=31;d++)h+=`<th>${d}</th>`;
- h+='<th>JUMLAH BAYAR</th><th>SISA SALDO</th><th>AKSI</th></tr></thead><tbody>';
- const daily=Array(31).fill(0);let sumPay=0;
- rows.forEach((r,index)=>{
-  const l=r.loan,m=r.member,day=Array(31).fill(0);
-  r.payments.forEach(p=>{let n=Number(String(p.tanggal_bayar).slice(8,10));if(n>=1&&n<=31)day[n-1]+=Number(p.jumlah_bayar||0)});
-  const total=day.reduce((a,b)=>a+b,0);sumPay+=total;day.forEach((v,i)=>daily[i]+=v);
-  h+=`<tr><td>${esc(l.tanggal_drop)}</td><td>${esc(m.no_anggota)}</td><td>${esc(l.no_pinjaman)}</td><td class="name">${esc(m.nama)}</td><td class="name">${esc(m.alamat)}</td><td>${money(l.besar_pinjaman)}</td><td>${money(r.saldo_awal)}</td>`;
-  day.forEach((v,i)=>h+=`<td><button class="cellbtn" onclick="addPayment('${r.id}','${kind}','${activePeriod.id}',${i+1})">${v?money(v):"+"}</button></td>`);
-  h+=`<td>${money(total)}</td><td>${money(l.sisa_saldo)}</td><td>—</td></tr>`;
+ const dates=[...new Set([...(dateColumns[kind]||[]),...rows.flatMap(r=>(r.payments||[]).map(p=>p.tanggal_bayar))])].sort();
+ let h='<table><thead><tr>'+
+ '<th class="col-date">TGL</th><th class="col-na">NA</th><th class="col-np">NP</th>'+
+ '<th class="col-name">NAMA NASABAH</th><th class="col-address">ALAMAT</th>'+
+ '<th class="col-amount">BESAR PINJAMAN</th><th class="col-balance">SALDO AWAL</th>';
+ dates.forEach(d=>{const parts=d.split('-');h+=`<th class="col-payment">${parts[2]}/${parts[1]}</th>`});
+ h+='<th class="col-total">JUMLAH BAYAR</th><th class="col-total">SISA SALDO</th>';
+ if(kind==="buku1")h+='<th class="col-action">AKSI</th>';
+ h+='</tr></thead><tbody>';
+ const daily=Object.fromEntries(dates.map(d=>[d,0]));let sumPay=0;
+ rows.forEach(r=>{
+  const l=r.loan||{},m=r.member||{},paidByDate={};
+  (r.payments||[]).forEach(p=>{paidByDate[p.tanggal_bayar]=(paidByDate[p.tanggal_bayar]||0)+Number(p.jumlah_bayar||0)});
+  const total=Object.values(paidByDate).reduce((a,b)=>a+b,0);sumPay+=total;
+  dates.forEach(d=>daily[d]=(daily[d]||0)+(paidByDate[d]||0));
+  h+=`<tr><td class="col-date">${esc(l.tanggal_drop)}</td><td class="col-na">${esc(m.no_anggota)}</td><td class="col-np">${esc(l.no_pinjaman)}</td>`+
+  `<td class="col-name name">${esc(m.nama)}</td><td class="col-address name">${esc(m.alamat)}</td>`+
+  `<td class="col-amount">${money(l.besar_pinjaman)}</td><td class="col-balance">${money(r.saldo_awal)}</td>`;
+  dates.forEach(d=>h+=`<td class="col-payment"><button class="date-col-btn" onclick="addPayment('${r.id}','${kind}','${d}')">${paidByDate[d]?money(paidByDate[d]):'+'}</button></td>`);
+  h+=`<td class="col-total">${money(total)}</td><td class="col-total">${money(l.sisa_saldo)}</td>`;
+  if(kind==="buku1")h+='<td class="col-action">—</td>';
+  h+='</tr>';
  });
- // Buku kosong: setiap kotak input bisa diklik dan diisi langsung.
- const blankRows=Math.max(20,30-rows.length);
- for(let i=0;i<blankRows;i++){
-  const n=rows.length+i;
-  if(kind==="buku1"){
-   h+=`<tr>
-   <td><input class="cellinput" id="${kind}-date-${n}" type="date" aria-label="Tanggal drop"></td>
-   <td><input class="cellinput" id="${kind}-na-${n}" placeholder="NA" aria-label="Nomor anggota"></td>
-   <td><input class="cellinput" id="${kind}-np-${n}" placeholder="NP" aria-label="Nomor pinjaman"></td>
-   <td><input class="cellinput" id="${kind}-name-${n}" placeholder="Nama nasabah" aria-label="Nama nasabah"></td>
-   <td><input class="cellinput" id="${kind}-address-${n}" placeholder="Alamat" aria-label="Alamat"></td>
-   <td><input class="cellinput" id="${kind}-amount-${n}" type="number" min="1" placeholder="Rp" aria-label="Besar pinjaman"></td>
-   <td class="money">—</td>`;
-  }else{
-   h+='<tr><td></td><td></td><td></td><td class="name"></td><td class="name"></td><td></td><td></td>';
-  }
-  for(let d=1;d<=31;d++)h+='<td></td>';
-  h+=kind==="buku1"?`<td>—</td><td>—</td><td><button class="saveRow" onclick="saveInlineLoan('${kind}',${n})">SIMPAN</button></td></tr>`:'<td></td><td></td><td></td></tr>';
+ for(let i=0;i<(kind==="buku1"?blankRowCount.buku1:0);i++){
+  const n=i;
+  h+=`<tr><td class="col-date"><input class="cellinput" id="${kind}-date-${n}" type="date" value="${esc(draftRows[kind]?.[n]?.date||'')}" oninput="setDraft('${kind}',${n},'date',this.value)" aria-label="Tanggal drop"></td>`+
+  `<td class="col-na"><input class="cellinput" id="${kind}-na-${n}" value="${esc(draftRows[kind]?.[n]?.na||'')}" oninput="setDraft('${kind}',${n},'na',this.value)" placeholder="NA" aria-label="Nomor anggota"></td>`+
+  `<td class="col-np"><input class="cellinput" id="${kind}-np-${n}" value="${esc(draftRows[kind]?.[n]?.np||'')}" oninput="setDraft('${kind}',${n},'np',this.value)" placeholder="NP" aria-label="Nomor pinjaman"></td>`+
+  `<td class="col-name"><input class="cellinput nameinput" id="${kind}-name-${n}" value="${esc(draftRows[kind]?.[n]?.name||'')}" oninput="setDraft('${kind}',${n},'name',this.value)" placeholder="Nama" aria-label="Nama nasabah"></td>`+
+  `<td class="col-address"><input class="cellinput nameinput" id="${kind}-address-${n}" value="${esc(draftRows[kind]?.[n]?.address||'')}" oninput="setDraft('${kind}',${n},'address',this.value)" placeholder="Alamat" aria-label="Alamat"></td>`+
+  `<td class="col-amount"><input class="cellinput" id="${kind}-amount-${n}" value="${esc(draftRows[kind]?.[n]?.amount||'')}" oninput="setDraft('${kind}',${n},'amount',this.value)" type="number" min="1" placeholder="Rp" aria-label="Besar pinjaman"></td><td class="col-balance">—</td>`;
+  dates.forEach(()=>h+='<td class="col-payment"></td>');
+  h+='<td class="col-total">—</td><td class="col-total">—</td>'+
+  `<td class="col-action"><button class="saveRow" onclick="saveInlineLoan('${kind}',${n})">SIMPAN</button></td></tr>`;
  }
- h+='<tr><th colspan="7">JUMLAH STORTING HARIAN</th>';daily.forEach(v=>h+=`<th>${v?money(v):""}</th>`);h+=`<th>${money(sumPay)}</th><th></th><th></th></tr></tbody></table>`;
+ h+='<tr><th colspan="7">JUMLAH STORTING HARIAN</th>';
+ dates.forEach(d=>h+=`<th class="col-payment">${daily[d]?money(daily[d]):''}</th>`);
+ h+=`<th>${money(sumPay)}</th><th></th>`+(kind==="buku1"?'<th></th>':'')+'</tr></tbody></table>';
  $(target).innerHTML=h;
 }
 async function saveInlineLoan(kind,n){
@@ -202,14 +247,13 @@ async function saveInlineLoan(kind,n){
  const link=await db.from("periode_pinjaman").insert({periode_id:activePeriod.id,pinjaman_id:loan.data.id,jenis_buku:"buku1",saldo_awal:amount});
  if(link.error){alert("Pinjaman tersimpan, tetapi gagal masuk Buku 1: "+link.error.message);return}
  alert("Data nasabah dan pinjaman berhasil disimpan.");
+ delete draftRows.buku1[n];
  await loadBook("buku1");
 }
-async function addPayment(ppid,kind,periodId,day){
+async function addPayment(ppid,kind,date){
  const row=currentLoans[kind].find(x=>String(x.id)===String(ppid));if(!row)return;
- const defaultDate=String(activePeriod.tanggal_mulai).slice(0,8)+String(day).padStart(2,"0");
- const date=prompt("Tanggal pembayaran (YYYY-MM-DD):",defaultDate);if(date===null)return;
- if(!/^\d{4}-\d{2}-\d{2}$/.test(date)){alert("Format tanggal harus YYYY-MM-DD.");return}
- const amount=Number(prompt("Jumlah pembayaran (Rp):",""));if(!Number.isFinite(amount)||amount<=0){alert("Jumlah pembayaran tidak valid.");return}
+ const amount=Number(prompt(`Jumlah pembayaran untuk tanggal ${date} (Rp):`,""));
+ if(!Number.isFinite(amount)||amount<=0){alert("Jumlah pembayaran tidak valid.");return}
  if(amount>Number(row.loan.sisa_saldo||0)){alert("Pembayaran melebihi sisa saldo pinjaman.");return}
  const {error}=await db.from("transaksi_bayar").insert({periode_pinjaman_id:ppid,tanggal_bayar:date,jumlah_bayar:amount});
  if(error){alert("Gagal menyimpan pembayaran: "+error.message);return}
