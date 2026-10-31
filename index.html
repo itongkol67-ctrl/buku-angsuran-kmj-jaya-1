@@ -20,7 +20,7 @@ button:disabled{opacity:.5}label{font-size:13px;font-weight:bold;display:block;m
 .menu button.active{background:#0d3e30;outline:3px solid #a8c9b8}
 .tablewrap{overflow:auto;background:white;border:1px solid #718078;border-radius:3px;max-height:72vh;overscroll-behavior:contain}
 table{border-collapse:collapse;min-width:1900px;width:max-content;font-size:12px;background:#fff}
-th,td{border:1px solid #89958f;padding:8px 7px;text-align:center;white-space:nowrap;height:36px}
+th,td{border:1px solid #89958f;padding:8px 7px;text-align:center;white-space:nowrap;height:42px}
 th{background:#e2e8e4;position:sticky;top:0;z-index:3;font-weight:700}
 td.name,th.name{text-align:left;min-width:145px}
 td.fixedcol{background:#fff;position:sticky;z-index:1}th.fixedcol{position:sticky;z-index:4;background:#e2e8e4}
@@ -161,20 +161,27 @@ async function loadBook(kind){
  renderLedger(target,rows,kind);
 }
 function renderLedger(target,rows,kind){
- let h='<table><thead><tr><th class="fixedcol">TGL DROP</th><th class="fixedcol">NO. ANGGOTA</th><th class="fixedcol name">NAMA NASABAH / ALAMAT</th><th>BESAR PINJAMAN</th><th>SALDO AWAL</th>';
+ let h='<table><thead><tr><th>NO.</th><th>TGL DROP</th><th>NO. ANGGOTA</th><th class="name">NAMA NASABAH</th><th class="name">ALAMAT</th><th>BESAR PINJAMAN</th><th>SALDO AWAL</th>';
  for(let d=1;d<=31;d++)h+=`<th>${d}</th>`;
  h+='<th>JUMLAH BAYAR</th><th>SISA SALDO</th></tr></thead><tbody>';
  const daily=Array(31).fill(0);let sumPay=0;
- rows.forEach(r=>{
+ rows.forEach((r,index)=>{
   const l=r.loan,m=r.member,day=Array(31).fill(0);
   r.payments.forEach(p=>{let n=Number(String(p.tanggal_bayar).slice(8,10));if(n>=1&&n<=31)day[n-1]+=Number(p.jumlah_bayar||0)});
   const total=day.reduce((a,b)=>a+b,0);sumPay+=total;day.forEach((v,i)=>daily[i]+=v);
-  h+=`<tr><td class="fixedcol">${esc(l.tanggal_drop)}</td><td class="fixedcol">${esc(m.no_anggota)}<br>${esc(l.no_pinjaman)}</td><td class="fixedcol name"><b>${esc(m.nama)}</b><br>${esc(m.alamat)}</td><td>${money(l.besar_pinjaman)}</td><td>${money(r.saldo_awal)}</td>`;
+  h+=`<tr><td>${index+1}</td><td>${esc(l.tanggal_drop)}</td><td>${esc(m.no_anggota)}<br>${esc(l.no_pinjaman)}</td><td class="name">${esc(m.nama)}</td><td class="name">${esc(m.alamat)}</td><td>${money(l.besar_pinjaman)}</td><td>${money(r.saldo_awal)}</td>`;
   day.forEach((v,i)=>h+=`<td><button class="cellbtn" onclick="addPayment('${r.id}','${kind}','${activePeriod.id}',${i+1})">${v?money(v):"+"}</button></td>`);
   h+=`<td>${money(total)}</td><td>${money(l.sisa_saldo)}</td></tr>`;
  });
- h+='<tr><th colspan="5">JUMLAH STORTING HARIAN</th>';daily.forEach(v=>h+=`<th>${v?money(v):""}</th>`);h+=`<th>${money(sumPay)}</th><th></th></tr></tbody></table>`;
- $(target).innerHTML=rows.length?h:'<div class="card">Belum ada catatan pada buku ini.</div>';
+ // Buku manual tetap menampilkan baris kosong meskipun belum ada nasabah.
+ const blankRows=Math.max(20,30-rows.length);
+ for(let i=0;i<blankRows;i++){
+  h+='<tr><td>&nbsp;</td><td></td><td></td><td class="name"></td><td class="name"></td><td></td><td></td>';
+  for(let d=1;d<=31;d++)h+='<td></td>';
+  h+='<td></td><td></td></tr>';
+ }
+ h+='<tr><th colspan="7">JUMLAH STORTING HARIAN</th>';daily.forEach(v=>h+=`<th>${v?money(v):""}</th>`);h+=`<th>${money(sumPay)}</th><th></th></tr></tbody></table>';
+ $(target).innerHTML=h;
 }
 async function saveLoan(){
  if(!activePeriod){msg("loanMsg","Periode belum tersedia.","error");return}
